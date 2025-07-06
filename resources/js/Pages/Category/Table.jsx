@@ -12,11 +12,14 @@ import {
     IconTrash,
     IconSearch,
     IconChevronDown,
+    IconCheck,
 } from "@tabler/icons-react";
 import { useMantineTheme } from "@mantine/core";
 import { useState } from "react";
+import { router } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
 
-const CategoryTable = () => {
+const CategoryTable = ({ categories }) => {
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -68,6 +71,7 @@ const CategoryTable = () => {
         },
     ];
 
+    console.log(categories, "categories");
     const filteredData = subCategories.filter(
         (item) =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,6 +79,33 @@ const CategoryTable = () => {
             item.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleEdit = (id) => {
+        console.log(id);
+        const response = router.get(route("categories.edit", id), {
+            onSuccess: () => {
+                notifications.show({
+                    title: "Success!",
+                    message: "Category created successfully",
+                    color: "teal",
+                    icon: <IconCheck size={18} />,
+                    withCloseButton: true,
+                });
+            },
+        });
+    };
+    const handleDelete = (id) => {
+        router.delete(route("categories.delete", id), {
+            onSuccess: () => {
+                notifications.show({
+                    title: "Success!",
+                    message: "Category deleted successfully",
+                    color: "teal",
+                    icon: <IconCheck size={18} />,
+                    withCloseButton: true,
+                });
+            },
+        });
+    };
     return (
         <>
             <Paper withBorder p="md" mb="md" radius="md">
@@ -125,14 +156,14 @@ const CategoryTable = () => {
                             <tr>
                                 <th style={{ padding: "16px 24px" }}>Image</th>
                                 <th style={{ padding: "16px 24px" }}>
-                                    Sub Category
+                                    Category
                                 </th>
                                 <th style={{ padding: "16px 24px" }}>
-                                    Category
+                                    Description
                                 </th>
                                 <th style={{ padding: "16px 24px" }}>Code</th>
                                 <th style={{ padding: "16px 24px" }}>
-                                    Description
+                                    Category Slug
                                 </th>
                                 <th style={{ padding: "16px 24px" }}>Status</th>
                                 <th style={{ padding: "16px 24px" }}>
@@ -141,7 +172,7 @@ const CategoryTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((item) => (
+                            {categories?.data?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
@@ -165,26 +196,26 @@ const CategoryTable = () => {
                                             fontWeight: 500,
                                         }}
                                     >
-                                        {item.name}
+                                        {item?.title}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.category}
+                                        {item?.description}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.code}
+                                        {item?.slug}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.description}
+                                        {item?.created_at}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
                                         <Badge
-                                            color={
-                                                item.status === "Active"
-                                                    ? "green"
-                                                    : "gray"
-                                            }
-                                            variant="light"
+                                            //variant="light"
                                             radius="sm"
+                                            className={`${
+                                                item?.status === "draft"
+                                                    ? "text-gray-500"
+                                                    : "text-green-600 dark:text-green-500"
+                                            }`}
                                             style={{ textTransform: "none" }}
                                         >
                                             {item.status}
@@ -196,6 +227,9 @@ const CategoryTable = () => {
                                                 variant="outline"
                                                 color="blue"
                                                 size="md"
+                                                onClick={() =>
+                                                    handleEdit(item?.id)
+                                                }
                                             >
                                                 <IconEdit size={16} />
                                             </ActionIcon>
@@ -203,6 +237,9 @@ const CategoryTable = () => {
                                                 variant="outline"
                                                 color="red"
                                                 size="md"
+                                                onClick={() =>
+                                                    handleDelete(item?.id)
+                                                }
                                             >
                                                 <IconTrash size={16} />
                                             </ActionIcon>

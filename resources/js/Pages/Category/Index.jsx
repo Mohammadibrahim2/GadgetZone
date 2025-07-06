@@ -7,9 +7,10 @@ import MainLayout from "@/Layouts/MainLayout";
 import ButtonWithIcon from "@/Components/button/ButtonWithIcon";
 import { useState } from "react";
 import CategoryTable from "./Table";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 const CategoryIndex = () => {
+    const { categories } = usePage().props;
     // const [opened, { open, close }] = useDisclosure(false);
     const [opened, setOpened] = useState(false);
     const handleSubmit = () => {
@@ -47,7 +48,7 @@ const CategoryIndex = () => {
             >
                 <h1>dhjhbahbhjabkjbf</h1>
             </Modal>
-            <CategoryTable />
+            <CategoryTable categories={categories} />
         </Box>
     );
 };
