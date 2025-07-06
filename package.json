@@ -25,6 +25,7 @@
     "dependencies": {
         "@mantine/core": "^8.1.2",
         "@mantine/hooks": "^8.1.2",
+        "@mantine/notifications": "^8.1.2",
         "@tabler/icons-react": "^3.34.0",
         "react-hook-form": "^7.60.0",
         "recharts": "^3.0.2",

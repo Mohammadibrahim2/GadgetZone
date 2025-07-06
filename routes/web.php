@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::middleware('guest')->group(function () {
 
 
 Route::middleware('auth')->group(function () {
+    Route::group(['prefix' => 'customers', 'as' => 'customers.'], function () {
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
+    });
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -37,6 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'categories', 'as' => 'categories.'], function () {
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
         Route::get('/create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/store', [CategoryController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [CategoryController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [CategoryController::class, 'destroy'])->name('delete');
     });
 });
 

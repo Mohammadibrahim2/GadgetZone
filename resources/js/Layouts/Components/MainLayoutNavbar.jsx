@@ -1,58 +1,305 @@
-import { Link, usePage } from "@inertiajs/react";
 import {
-    IconHome,
-    IconBed,
-    IconCategory,
+    IconBulb,
+    IconCheckbox,
+    IconPlus,
     IconUser,
-    IconChartBar,
-    IconMail,
     IconSettings,
     IconLogout,
+    IconHome,
+    IconChartBar,
+    IconMail,
+    IconChevronDown,
+    IconCategory,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import { Link, usePage } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
-const navLinks = [
-    { icon: IconHome, label: "Dashboard", href: "/" },
-    { icon: IconCategory, label: "Hotels", href: "/hotels" },
-    { icon: IconBed, label: "Rooms", href: "/rooms" },
-    { icon: IconCategory, label: "Categories", href: "/categories/categories" },
-    { icon: IconUser, label: "Contacts", href: "/contacts" },
-    { icon: IconChartBar, label: "Analytics", href: "/analytics" },
-    { icon: IconMail, label: "Messages", href: "/messages" },
+const mainLinks = [
+    {
+        icon: IconHome,
+        label: "Dashboard",
+        route: "dashboard",
+        notifications: 0,
+        subLinks: [],
+    },
+    {
+        icon: IconBulb,
+        label: "Hotels",
+        route: "customers.customers",
+        notifications: 3,
+        // subLinks: [
+        //     { label: "All Hotels", route: "hotels.index" },
+        //     { label: "Create New", route: "hotels.create" },
+        // ],
+    },
+    {
+        icon: IconCheckbox,
+        label: "Rooms",
+        route: "customers.customers",
+        notifications: 4,
+        // subLinks: [
+        //     { label: "My Tasks", route: "rooms.tasks" },
+        //     { label: "Assigned", route: "rooms.assigned" },
+        //     { label: "Completed", route: "rooms.completed" },
+        // ],
+    },
+    {
+        icon: IconCategory,
+        label: "Category",
+        route: "categories.categories",
+        subLinks: [],
+    },
+    {
+        icon: IconUser,
+        label: "Customers",
+        route: "customers.customers",
+        // subLinks: [
+        //     { label: "Reports", route: "analytics.reports" },
+        //     { label: "Statistics", route: "analytics.statistics" },
+        // ],
+    },
+    {
+        icon: IconMail,
+        label: "Messages",
+        route: "customers.customers",
+        notifications: 2,
+        subLinks: [],
+    },
 ];
 
-function MainLayoutNavbar() {
-    const { auth } = usePage().props;
+const collections = [
+    {
+        emoji: "👍",
+        label: "Hotels",
+        route: "customers.customers",
+        // subCollections: [
+        //     { label: "Monthly", route: "collections.hotels.monthly" },
+        //     { label: "Quarterly", route: "collections.hotels.quarterly" },
+        // ],
+    },
+    {
+        emoji: "🚚",
+        label: "Rooms",
+        route: "customers.customers",
+        // subCollections: [
+        //     { label: "Pending", route: "collections.rooms.pending" },
+        //     { label: "Completed", route: "collections.rooms.completed" },
+        // ],
+    },
+    {
+        emoji: "💸",
+        label: "Discounts",
+        route: "customers.customers",
+        subCollections: [],
+    },
+    {
+        emoji: "💰",
+        label: "Profits",
+        route: "customers.customers",
+        subCollections: [],
+    },
+];
+
+function AccordionItem({ item, active, setActive, children, hasSubItems }) {
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="flex flex-col h-full bg-white">
-            <div className="flex-1 overflow-y-auto p-2">
-                {navLinks.map((link) => (
-                    <Link
-                        key={link.label}
-                        href={link.href}
-                        className="flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 mb-1"
-                    >
-                        <link.icon size={20} className="mr-3" />
-                        <span>{link.label}</span>
-                    </Link>
-                ))}
+        <li>
+            <Link
+                href={route(item.route)}
+                onClick={() => {
+                    if (hasSubItems) {
+                        setIsOpen(!isOpen);
+                    }
+                    setActive(item.label);
+                }}
+                className={`flex items-center w-full p-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    route().current(item.route.split(".")[0] + ".*") ||
+                    route().current(item.route)
+                        ? "bg-orange-50 text-orange-600"
+                        : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+                <span
+                    className={`transition-transform duration-300 ${
+                        isOpen ? "rotate-0" : "-rotate-90"
+                    }`}
+                >
+                    {hasSubItems ? (
+                        <IconChevronDown className="w-4 h-4 mr-1" />
+                    ) : (
+                        <span className="w-4 h-4 mr-1"></span>
+                    )}
+                </span>
+                {item.icon ? (
+                    <item.icon className="w-5 h-5 mr-2" />
+                ) : (
+                    <span className="w-5 h-5 mr-2">{item.emoji}</span>
+                )}
+                <span className="flex-1 text-left">{item.label}</span>
+
+                {item.notifications > 0 && (
+                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
+                        {item.notifications}
+                    </span>
+                )}
+            </Link>
+            {hasSubItems && (
+                <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        isOpen ? "max-h-96" : "max-h-0"
+                    }`}
+                >
+                    <div className="ml-8 mt-1">{children}</div>
+                </div>
+            )}
+        </li>
+    );
+}
+
+function MainLayoutNavbar() {
+    const [active, setActive] = useState("Dashboard");
+    const [activeCollection, setActiveCollection] = useState("Hotels");
+
+    const { auth } = usePage().props;
+    return (
+        <div className="flex flex-col h-screen w-64 bg-white border-r border-gray-200">
+            {/* User Profile Section */}
+            <Link
+                href={route("profile.edit")}
+                className="flex items-center p-4 border-b border-gray-200 hover:bg-gray-50"
+            >
+                <div className="relative">
+                    <img
+                        className="w-10 h-10 rounded-full"
+                        src="https://i.pinimg.com/736x/c4/65/c5/c465c58541e0841fcf56b83cd8c3f45f.jpg"
+                        alt={auth?.user?.name}
+                    />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                </div>
+                <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-700">
+                        {auth.user.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                        {auth.user.roles?.[0]?.name || "User"}
+                    </p>
+                </div>
+            </Link>
+
+            {/* Main Navigation Links */}
+            <div className="flex-1 overflow-y-auto">
+                <nav className="p-2">
+                    <ul className="space-y-1">
+                        {mainLinks.map((link) => (
+                            <AccordionItem
+                                key={link.label}
+                                item={link}
+                                active={active}
+                                setActive={setActive}
+                                //    hasSubItems={link?.subLinks.length > 0}
+                            >
+                                {/* <ul className="space-y-1">
+                                    {link?.subLinks.map((subLink) => (
+                                        <li key={subLink.label}>
+                                            <Link
+                                                href={route(subLink.route)}
+                                                className={`flex items-center w-full p-2 pl-6 text-sm rounded-lg transition-colors duration-200 ${
+                                                    route().current(
+                                                        subLink.route
+                                                    )
+                                                        ? "bg-orange-50 text-orange-600"
+                                                        : "text-gray-600 hover:bg-gray-100"
+                                                }`}
+                                            >
+                                                <span className="flex-1 text-left">
+                                                    {subLink.label}
+                                                </span>
+                                                {subLink.notifications > 0 && (
+                                                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
+                                                        {subLink.notifications}
+                                                    </span>
+                                                )}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul> */}
+                            </AccordionItem>
+                        ))}
+                    </ul>
+                </nav>
+
+                {/* Collections Section */}
+                <div className="p-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Collections
+                        </h3>
+                        <Link
+                            href={route("customers.customers")}
+                            className="p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-md"
+                        >
+                            <IconPlus className="w-4 h-4" />
+                        </Link>
+                    </div>
+                    <ul className="space-y-1">
+                        {collections.map((collection) => (
+                            <AccordionItem
+                                key={collection.label}
+                                item={collection}
+                                active={activeCollection}
+                                setActive={setActiveCollection}
+                                // hasSubItems={
+                                //     collection.subCollections.length > 0
+                                // }
+                            >
+                                {/* <ul className="space-y-1">
+                                    {collection.subCollections.map(
+                                        (subCollection) => (
+                                            <li key={subCollection.label}>
+                                                <Link
+                                                    href={route(
+                                                        subCollection.route
+                                                    )}
+                                                    className={`flex items-center w-full p-2 pl-6 text-sm rounded-lg transition-colors duration-200 ${
+                                                        route().current(
+                                                            subCollection.route
+                                                        )
+                                                            ? "bg-orange-50 text-orange-600"
+                                                            : "text-gray-600 hover:bg-gray-100"
+                                                    }`}
+                                                >
+                                                    <span>
+                                                        {subCollection.label}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        )
+                                    )}
+                                </ul> */}
+                            </AccordionItem>
+                        ))}
+                    </ul>
+                </div>
             </div>
 
-            <div className="p-4 border-t">
+            {/* Bottom Settings/Logout */}
+            <div className="p-4 border-t border-gray-200">
                 <Link
-                    href="/settings"
-                    className="flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 mb-1"
+                    href={route("customers.customers")}
+                    className="flex items-center w-full p-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                    <IconSettings size={20} className="mr-3" />
+                    <IconSettings className="w-5 h-5 mr-3" />
                     <span>Settings</span>
                 </Link>
                 <Link
                     href={route("logout")}
                     method="post"
                     as="button"
-                    className="w-full flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100"
+                    className="flex items-center w-full p-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                    <IconLogout size={20} className="mr-3" />
+                    <IconLogout className="w-5 h-5 mr-3" />
                     <span>Logout</span>
                 </Link>
             </div>

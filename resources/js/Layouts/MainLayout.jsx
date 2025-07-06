@@ -1,40 +1,45 @@
+// ✅ Updated MainLayout.jsx
 import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import MainLayoutNavbar from "./Components/MainLayoutNavbar";
 import MainTopNavbar from "./Components/MainLayoutTopbar";
-import { Head } from "@inertiajs/react";
 
-function MainLayout({ children, title }) {
+function MainLayout({ children }) {
     const [opened, { toggle }] = useDisclosure();
+
     return (
-        <>
-            <Head title={title} />
-            <AppShell
-                header={{ height: 60 }}
-                navbar={{
-                    width: 250,
-                    breakpoint: "sm",
-                    collapsed: { mobile: !opened },
-                }}
-                padding="md"
-            >
-                <AppShell.Header className="shadow-sm">
-                    <MainTopNavbar />
-                </AppShell.Header>
+        <AppShell
+            header={{ height: 60 }}
+            navbar={{
+                width: 250,
+                breakpoint: "sm",
+                collapsed: { mobile: !opened },
+            }}
+            padding="md"
+            classNames={{
+                main: "bg-gray-50 min-h-screen overflow-hidden",
+            }}
+        >
+            {/* Top Navbar */}
+            <AppShell.Header className="shadow-sm bg-white border-b border-gray-200 z-10">
+                <MainTopNavbar />
+            </AppShell.Header>
 
-                <div className="flex" style={{ height: "calc(100vh - 60px)" }}>
-                    <AppShell.Navbar className="border-r-0">
-                        <MainLayoutNavbar />
-                    </AppShell.Navbar>
+            {/* Sidebar + Content Layout */}
+            <div className="flex h-[calc(100vh-60px)]">
+                <AppShell.Navbar className="bg-white border-r border-gray-200 overflow-y-auto">
+                    <MainLayoutNavbar />
+                </AppShell.Navbar>
 
-                    <AppShell.Main className="p-0 flex-1 min-w-0">
-                        <div className="h-full w-full overflow-auto">
-                            {children}
-                        </div>
-                    </AppShell.Main>
-                </div>
-            </AppShell>
-        </>
+                {/* Main Content */}
+                <AppShell.Main className="p-4 flex-1 min-w-0">
+                    <div className="h-full w-full overflow-y-auto bg-white rounded-lg shadow-sm p-4">
+                        {children}
+                    </div>
+                </AppShell.Main>
+            </div>
+        </AppShell>
     );
 }
+
 export default MainLayout;
