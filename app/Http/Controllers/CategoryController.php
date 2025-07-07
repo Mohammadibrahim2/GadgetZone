@@ -16,6 +16,8 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::select('title', 'id', 'slug', 'description', 'created_at', 'status')->get();
+
+        // dd($categories);
         return Inertia::render('Category/Index', ['categories' => CategoryResource::collection($categories)]);
     }
 

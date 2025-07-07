@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 
-class CategoryResource extends JsonResource
+class CustomerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +16,11 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->description,
-            'slug' => $this->slug,
+            'phone' => $this->phone,
+            'country' => $this->country,
+            'status' => $this->slug,
             'created_at' => date('d M Y', strtotime($this->created_at)),
             'status' => $this->status
-
         ];
     }
 }

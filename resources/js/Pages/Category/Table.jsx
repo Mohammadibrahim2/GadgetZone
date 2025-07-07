@@ -6,6 +6,7 @@ import {
     TextInput,
     Group,
     Button,
+    Space,
 } from "@mantine/core";
 import {
     IconEdit,
@@ -161,9 +162,11 @@ const CategoryTable = ({ categories }) => {
                                 <th style={{ padding: "16px 24px" }}>
                                     Description
                                 </th>
-                                <th style={{ padding: "16px 24px" }}>Code</th>
                                 <th style={{ padding: "16px 24px" }}>
                                     Category Slug
+                                </th>
+                                <th style={{ padding: "16px 24px" }}>
+                                    Created At
                                 </th>
                                 <th style={{ padding: "16px 24px" }}>Status</th>
                                 <th style={{ padding: "16px 24px" }}>
@@ -213,35 +216,35 @@ const CategoryTable = ({ categories }) => {
                                             radius="sm"
                                             className={`${
                                                 item?.status === "draft"
-                                                    ? "text-gray-500"
-                                                    : "text-green-600 dark:text-green-500"
+                                                    ? "text-gray-500 capitalize"
+                                                    : "text-green-600 dark:text-green-500 capitalize"
                                             }`}
-                                            style={{ textTransform: "none" }}
                                         >
                                             {item.status}
                                         </Badge>
                                     </td>
-                                    <td style={{ padding: "12px 24px" }}>
-                                        <Group spacing={4}>
+                                    <td>
+                                        <Group justify="space-between" grow>
                                             <ActionIcon
                                                 variant="outline"
-                                                color="blue"
+                                                className=" py-2 px-2 shadow "
                                                 size="md"
                                                 onClick={() =>
                                                     handleEdit(item?.id)
                                                 }
                                             >
-                                                <IconEdit size={16} />
+                                                <IconEdit size={20} />
                                             </ActionIcon>
+
                                             <ActionIcon
-                                                variant="outline"
-                                                color="red"
+                                                variant="filled"
                                                 size="md"
+                                                className=" py-2 px-2 shadow "
                                                 onClick={() =>
                                                     handleDelete(item?.id)
                                                 }
                                             >
-                                                <IconTrash size={16} />
+                                                <IconTrash size={20} />
                                             </ActionIcon>
                                         </Group>
                                     </td>

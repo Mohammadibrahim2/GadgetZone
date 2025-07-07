@@ -22,7 +22,7 @@ const CategoryForm = () => {
             title: "",
             parent_id: "",
             description: "",
-            status: "published",
+            status: "draft",
         },
     });
 

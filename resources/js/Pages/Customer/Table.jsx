@@ -12,53 +12,19 @@ import {
     IconTrash,
     IconSearch,
     IconChevronDown,
+    IconCheck,
 } from "@tabler/icons-react";
 import { useMantineTheme } from "@mantine/core";
 import { useState } from "react";
+import { router } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
+import MainLayout from "@/Layouts/MainLayout";
 
-const CategoryTable = () => {
+const CustomerTable = ({ users }) => {
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
-    const subCategories = [
-        {
-            id: 1,
-            image: "",
-            name: "kolihj",
-            email: "Computers@mail.com",
-            phone: "08135678",
-            description: "Efficient Productivity",
-            status: "Active",
-        },
-        {
-            id: 1,
-            image: "",
-            name: "kolihj",
-            email: "Computers@mail.com",
-            phone: "08135678",
-            description: "Efficient Productivity",
-            status: "Active",
-        },
-        {
-            id: 1,
-            image: "",
-            name: "kolihj",
-            email: "Computers@mail.com",
-            phone: "08135678",
-            description: "Efficient Productivity",
-            status: "Active",
-        },
-        {
-            id: 1,
-            image: "",
-            name: "kolihj",
-            email: "Computers@mail.com",
-            phone: "08135678",
-            description: "Efficient Productivity",
-            status: "Active",
-        },
-    ];
-
+    console.log(categories, "categories");
     const filteredData = subCategories.filter(
         (item) =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,6 +32,33 @@ const CategoryTable = () => {
             item.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleEdit = (id) => {
+        console.log(id);
+        const response = router.get(route("categories.edit", id), {
+            onSuccess: () => {
+                notifications.show({
+                    title: "Success!",
+                    message: "Category created successfully",
+                    color: "teal",
+                    icon: <IconCheck size={18} />,
+                    withCloseButton: true,
+                });
+            },
+        });
+    };
+    const handleDelete = (id) => {
+        router.delete(route("categories.delete", id), {
+            onSuccess: () => {
+                notifications.show({
+                    title: "Success!",
+                    message: "Category deleted successfully",
+                    color: "teal",
+                    icon: <IconCheck size={18} />,
+                    withCloseButton: true,
+                });
+            },
+        });
+    };
     return (
         <>
             <Paper withBorder p="md" mb="md" radius="md">
@@ -116,11 +109,17 @@ const CategoryTable = () => {
                             <tr>
                                 <th style={{ padding: "16px 24px" }}>Image</th>
                                 <th style={{ padding: "16px 24px" }}>
-                                    Customer
+                                    Category
                                 </th>
-                                <th style={{ padding: "16px 24px" }}>Email</th>
-                                <th style={{ padding: "16px 24px" }}>Code</th>
-                                <th style={{ padding: "16px 24px" }}>Phone</th>
+                                <th style={{ padding: "16px 24px" }}>
+                                    Description
+                                </th>
+                                <th style={{ padding: "16px 24px" }}>
+                                    Category Slug
+                                </th>
+                                <th style={{ padding: "16px 24px" }}>
+                                    Created At
+                                </th>
                                 <th style={{ padding: "16px 24px" }}>Status</th>
                                 <th style={{ padding: "16px 24px" }}>
                                     Actions
@@ -128,7 +127,7 @@ const CategoryTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((item) => (
+                            {users?.data?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
@@ -152,46 +151,51 @@ const CategoryTable = () => {
                                             fontWeight: 500,
                                         }}
                                     >
-                                        {item.name}
+                                        {item?.title}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.email}
+                                        {item?.description}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.code}
+                                        {item?.slug}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item.phone}
+                                        {item?.created_at}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
                                         <Badge
-                                            color={
-                                                item.status === "Active"
-                                                    ? "green"
-                                                    : "gray"
-                                            }
-                                            variant="light"
+                                            //variant="light"
                                             radius="sm"
-                                            style={{ textTransform: "none" }}
+                                            className={`${
+                                                item?.status === "draft"
+                                                    ? "text-gray-500 capitalize"
+                                                    : "text-green-600 dark:text-green-500 capitalize"
+                                            }`}
                                         >
                                             {item.status}
                                         </Badge>
                                     </td>
-                                    <td style={{ padding: "12px 24px" }}>
-                                        <Group spacing={4}>
+                                    <td style={{ padding: "24px 24px" }}>
+                                        <Group spacing={10}>
                                             <ActionIcon
                                                 variant="outline"
-                                                color="blue"
+                                                className=" py-2 px-2 shadow "
                                                 size="md"
+                                                onClick={() =>
+                                                    handleEdit(item?.id)
+                                                }
                                             >
-                                                <IconEdit size={16} />
+                                                <IconEdit size={20} />
                                             </ActionIcon>
                                             <ActionIcon
-                                                variant="outline"
-                                                color="red"
+                                                variant="filled"
                                                 size="md"
+                                                className=" py-2 px-2 shadow "
+                                                onClick={() =>
+                                                    handleDelete(item?.id)
+                                                }
                                             >
-                                                <IconTrash size={16} />
+                                                <IconTrash size={20} />
                                             </ActionIcon>
                                         </Group>
                                     </td>
@@ -204,5 +208,8 @@ const CategoryTable = () => {
         </>
     );
 };
+CustomerTable.layout = (page) => (
+    <MainLayout title="Customers ">{page}</MainLayout>
+);
 
-export default CategoryTable;
+export default CustomerTable;
