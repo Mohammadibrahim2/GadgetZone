@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,10 +18,12 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit($id): Response
     {
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+
+        $user = User::findOrFail($id);
+        return Inertia::render('User/Index', [
+            'user' => $user,
             'status' => session('status'),
         ]);
     }
@@ -27,17 +31,26 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request, $id)
     {
-        $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = User::findOrFail($id);
+
+        $validatedUser = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'password' => 'required'
+        ];
+        $user->update(
+            [
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]
+        );
+        if ($user) {
+            return back()->with(['message' => 'profile  is successfully updated']);
         }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit');
     }
 
     /**

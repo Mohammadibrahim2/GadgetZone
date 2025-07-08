@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -56,5 +57,14 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+    public function profile($id)
+    {
+        try {
+            $user = USer::findOrFail($id);
+            return redirect()->route('profile');
+        } catch (\Exception $e) {
+            Log::error(['error' => $e->getMessage()]);
+        }
     }
 }

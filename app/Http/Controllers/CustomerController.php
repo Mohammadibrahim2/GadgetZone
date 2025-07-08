@@ -21,8 +21,8 @@ class CustomerController extends Controller
         $customers = Customer::with('user:id,user_id,name,email')
             ->select('id', 'country', 'phone', 'created_at', 'status', 'customer_code')->get();
 
-        dd($customers);
-        return Inertia::render('Category/Index', ['customers' => CustomerResource::collection($customers)]);
+
+        return Inertia::render('Customer/Index', ['customers' => CustomerResource::collection($customers)]);
     }
 
     public function create()

@@ -8,15 +8,15 @@ import ButtonWithIcon from "@/Components/button/ButtonWithIcon";
 import { useState } from "react";
 import CategoryTable from "./Table";
 import { router, usePage } from "@inertiajs/react";
+import BrandTable from "./Table";
 
-const CategoryIndex = () => {
-    const [opened, { open, close }] = useDisclosure(false);
-    //const [opened, setOpened] = useState(false);
-    // const handleSubmit = () => {
-    //     router.get(route("categories.create"));
-    // };
-    const { customers } = usePage().props;
-    console.log(customers);
+const BrandIndex = () => {
+    const { brands } = usePage().props;
+    // const [opened, { open, close }] = useDisclosure(false);
+    const [opened, setOpened] = useState(false);
+    const handleSubmit = () => {
+        router.get(route("brands.create"));
+    };
     return (
         <Box className="w-full p-4">
             {/* Header section with proper alignment */}
@@ -25,39 +25,39 @@ const CategoryIndex = () => {
                 <div>
                     <Title order={2} className="text-xl">
                         {" "}
-                        Customers
+                        Brands
                     </Title>
                     <Title order={6} color="dimmed" mt={4}>
-                        Manage your Customer
+                        Manage your brands
                     </Title>
                 </div>
                 <ButtonWithIcon
-                    title="Add new"
+                    title="Add NEw"
                     iconLeft={<IconPlus size={16} />}
                     variant="brand"
-                    onClick={open}
+                    onClick={handleSubmit}
                     className="mr-6"
                 />
             </div>
 
             <Modal
                 opened={opened}
-                onClose={close}
+                onClose={() => setOpened(false)}
                 title="Authentication"
                 centered
                 zIndex={10000}
             >
                 <h1>dhjhbahbhjabkjbf</h1>
             </Modal>
-            <CategoryTable />
+            <BrandTable brands={brands} />
         </Box>
     );
 };
 
-CategoryIndex.layout = (page) => (
-    <MainLayout title="Categories" meta="Category Management">
+BrandIndex.layout = (page) => (
+    <MainLayout title="Brands" meta="Brand Management">
         {page}
     </MainLayout>
 );
 
-export default CategoryIndex;
+export default BrandIndex;

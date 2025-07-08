@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
@@ -33,9 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'customers', 'as' => 'customers.'], function () {
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
     });
+
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::group(['prefix' => 'categories', 'as' => 'categories.'], function () {
@@ -45,6 +47,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [CategoryController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CategoryController::class, 'destroy'])->name('delete');
+    });
+
+    Route::group(['prefix' => 'brands', 'as' => 'brands.'], function () {
+        Route::get('/brands', [BrandController::class, 'index'])->name('index');
+        Route::get('/create', [BrandController::class, 'create'])->name('create');
+        Route::post('/store', [BrandController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [BrandController::class, 'edit'])->name('edit');
+        Route::post('/update', [BrandController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [BrandController::class, 'destroy'])->name('delete');
     });
 });
 

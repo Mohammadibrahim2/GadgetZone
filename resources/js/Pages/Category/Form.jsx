@@ -4,6 +4,7 @@ import { IconCheck, IconCategory, IconChevronDown } from "@tabler/icons-react";
 import MainLayout from "@/Layouts/MainLayout";
 import { notifications } from "@mantine/notifications";
 import { router, usePage } from "@inertiajs/react";
+import { Divider } from "@mantine/core";
 
 const CategoryForm = () => {
     const { category } = usePage().props;
@@ -147,46 +148,6 @@ const CategoryForm = () => {
                                     Enter a unique name for your category
                                 </p>
                             </div>
-
-                            {/* Parent Category */}
-                            {/* <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Parent Category
-                                </label>
-                                <Controller
-                                    name="parent_id"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <div className="relative">
-                                            <select
-                                                {...field}
-                                                className={`w-full px-4 py-2 rounded-lg border-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none ${
-                                                    errors.parent_id
-                                                        ? "border-red-500"
-                                                        : "border-gray-300"
-                                                } bg-white text-gray-800`}
-                                            >
-                                                <option value="">
-                                                    Select parent category
-                                                </option>
-                                                <option value="1">
-                                                    Hotels
-                                                </option>
-                                                <option value="2">Rooms</option>
-                                                <option value="3">
-                                                    Amenities
-                                                </option>
-                                            </select>
-                                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <IconChevronDown className="w-5 h-5 text-gray-400" />
-                                            </div>
-                                        </div>
-                                    )}
-                                />
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Optional - select if this is a sub-category
-                                </p>
-                            </div> */}
                         </div>
 
                         {/* Description */}

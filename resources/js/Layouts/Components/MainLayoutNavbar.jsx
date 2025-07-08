@@ -10,6 +10,12 @@ import {
     IconMail,
     IconChevronDown,
     IconCategory,
+    IconBrand4chan,
+    IconUniverse,
+    IconTriangleInverted,
+    IconTrianglePlus2,
+    IconTriangleSquareCircleFilled,
+    IconTriangles,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
@@ -60,9 +66,9 @@ const mainLinks = [
         // ],
     },
     {
-        icon: IconMail,
-        label: "Messages",
-        route: "customers.customers",
+        icon: IconTriangles,
+        label: "Brands",
+        route: "brands.index",
         notifications: 2,
         subLinks: [],
     },
@@ -167,7 +173,7 @@ function MainLayoutNavbar() {
         <div className="flex flex-col h-screen w-64 bg-white border-r border-gray-200">
             {/* User Profile Section */}
             <Link
-                href={route("profile.edit")}
+                href={route("profile.edit", { id: auth?.user?.id })}
                 className="flex items-center p-4 border-b border-gray-200 hover:bg-gray-50"
             >
                 <div className="relative">
@@ -183,7 +189,9 @@ function MainLayoutNavbar() {
                         {auth.user.name}
                     </p>
                     <p className="text-xs text-gray-500">
-                        {auth.user.roles?.[0]?.name || "User"}
+                        {auth.user.role === "super_admin"
+                            ? "Super admin"
+                            : auth?.user?.role || "User"}
                     </p>
                 </div>
             </Link>

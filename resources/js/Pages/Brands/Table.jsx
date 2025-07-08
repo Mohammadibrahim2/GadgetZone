@@ -6,6 +6,7 @@ import {
     TextInput,
     Group,
     Button,
+    Space,
 } from "@mantine/core";
 import {
     IconEdit,
@@ -18,23 +19,16 @@ import { useMantineTheme } from "@mantine/core";
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
-import MainLayout from "@/Layouts/MainLayout";
 
-const CustomerTable = ({ users }) => {
+const BrandTable = ({ brands }) => {
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
-    console.log(users, "categories");
-    // const filteredData = subCategories.filter(
-    //     (item) =>
-    //         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //         item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //         item.code.toLowerCase().includes(searchQuery.toLowerCase())
-    // );
+    console.log(brands, "brands");
 
     const handleEdit = (id) => {
         console.log(id);
-        const response = router.get(route("categories.edit", id), {
+        const response = router.get(route("brands.edit", { id: id }), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
@@ -47,7 +41,7 @@ const CustomerTable = ({ users }) => {
         });
     };
     const handleDelete = (id) => {
-        router.delete(route("categories.delete", id), {
+        router.delete(route("brands.delete", { id: id }), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
@@ -75,7 +69,7 @@ const CustomerTable = ({ users }) => {
                             variant="outline"
                             rightIcon={<IconChevronDown size={16} />}
                         >
-                            Category
+                            Brand
                         </Button>
                         <Button
                             variant="outline"
@@ -107,16 +101,7 @@ const CustomerTable = ({ users }) => {
                             }}
                         >
                             <tr>
-                                <th style={{ padding: "16px 24px" }}>Image</th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Category
-                                </th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Description
-                                </th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Category Slug
-                                </th>
+                                <th style={{ padding: "16px 24px" }}>Brand</th>
                                 <th style={{ padding: "16px 24px" }}>
                                     Created At
                                 </th>
@@ -126,8 +111,9 @@ const CustomerTable = ({ users }) => {
                                 </th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            {users?.data?.map((item) => (
+                            {brands?.data?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
@@ -135,36 +121,39 @@ const CustomerTable = ({ users }) => {
                                     }}
                                 >
                                     <td style={{ padding: "12px 24px" }}>
-                                        <div
-                                            style={{
-                                                width: 40,
-                                                height: 40,
-                                                backgroundColor:
-                                                    theme.colors.gray[2],
-                                                borderRadius: 4,
-                                            }}
-                                        ></div>
+                                        <Group spacing="md">
+                                            <div className="flex flex-row items-center gap-x-3">
+                                                <img
+                                                    src={item?.logo}
+                                                    alt={item?.name}
+                                                    style={{
+                                                        width: 40,
+                                                        height: 40,
+                                                        borderRadius: 6,
+                                                        objectFit: "cover",
+                                                        backgroundColor:
+                                                            theme.colors
+                                                                .gray[2],
+                                                    }}
+                                                />
+                                                <span
+                                                    style={{
+                                                        fontWeight: 500,
+                                                        fontSize: "14px",
+                                                    }}
+                                                >
+                                                    {item?.name}
+                                                </span>
+                                            </div>
+                                        </Group>
                                     </td>
-                                    <td
-                                        style={{
-                                            padding: "12px 24px",
-                                            fontWeight: 500,
-                                        }}
-                                    >
-                                        {item?.title}
-                                    </td>
-                                    <td style={{ padding: "12px 24px" }}>
-                                        {item?.description}
-                                    </td>
-                                    <td style={{ padding: "12px 24px" }}>
-                                        {item?.slug}
-                                    </td>
+
                                     <td style={{ padding: "12px 24px" }}>
                                         {item?.created_at}
                                     </td>
+
                                     <td style={{ padding: "12px 24px" }}>
                                         <Badge
-                                            //variant="light"
                                             radius="sm"
                                             className={`${
                                                 item?.status === "draft"
@@ -175,11 +164,12 @@ const CustomerTable = ({ users }) => {
                                             {item.status}
                                         </Badge>
                                     </td>
-                                    <td style={{ padding: "24px 24px" }}>
-                                        <Group spacing={10}>
+
+                                    <td>
+                                        <Group justify="space-between" grow>
                                             <ActionIcon
                                                 variant="outline"
-                                                className=" py-2 px-2 shadow "
+                                                className="py-2 px-2 shadow"
                                                 size="md"
                                                 onClick={() =>
                                                     handleEdit(item?.id)
@@ -187,10 +177,11 @@ const CustomerTable = ({ users }) => {
                                             >
                                                 <IconEdit size={20} />
                                             </ActionIcon>
+
                                             <ActionIcon
                                                 variant="filled"
                                                 size="md"
-                                                className=" py-2 px-2 shadow "
+                                                className="py-2 px-2 shadow"
                                                 onClick={() =>
                                                     handleDelete(item?.id)
                                                 }
@@ -208,8 +199,5 @@ const CustomerTable = ({ users }) => {
         </>
     );
 };
-CustomerTable.layout = (page) => (
-    <MainLayout title="Customers ">{page}</MainLayout>
-);
 
-export default CustomerTable;
+export default BrandTable;

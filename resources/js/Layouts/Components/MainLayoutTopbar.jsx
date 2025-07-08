@@ -1,4 +1,5 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
 import {
     IconSearch,
     IconBell,
@@ -9,9 +10,12 @@ import {
     IconShoppingCart,
     IconUserCircle,
 } from "@tabler/icons-react";
+import { route } from "ziggy-js";
 import { useState } from "react";
 
 function MainTopNavbar() {
+    const { auth } = usePage().props;
+    console.log(auth?.user);
     const [currentShop, setCurrentShop] = useState("Main Store");
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -161,7 +165,7 @@ function MainTopNavbar() {
                                     alt="User profile"
                                 />
                                 <span className="hidden md:inline text-sm font-medium text-gray-700">
-                                    Ibrahim 7.
+                                    {auth?.user?.name}
                                 </span>
                                 <IconChevronDown
                                     className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
@@ -175,12 +179,14 @@ function MainTopNavbar() {
                             {profileOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200">
                                     <div className="py-1">
-                                        <a
-                                            href="#"
+                                        <Link
+                                            href={route("profile.edit", {
+                                                id: auth?.user?.id,
+                                            })}
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Your Profile
-                                        </a>
+                                        </Link>
                                         <a
                                             href="#"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
