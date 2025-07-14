@@ -20,19 +20,17 @@ import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 
-const BrandTable = ({ brands }) => {
+const AttributeTable = ({ attributes }) => {
+    console.log(attributes);
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
-    console.log(brands, "brands");
-
     const handleEdit = (id) => {
-        console.log(id, "idd");
-        const response = router.get(route("brands.edit", { id: id }), {
+        const response = router.get(route("attributes.edit", id), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
-                    message: "Category created successfully",
+                    message: "Attribute created successfully",
                     color: "teal",
                     icon: <IconCheck size={18} />,
                     withCloseButton: true,
@@ -41,7 +39,7 @@ const BrandTable = ({ brands }) => {
         });
     };
     const handleDelete = (id) => {
-        router.delete(route("brands.delete", { id: id }), {
+        router.delete(route("categories.delete", id), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
@@ -69,7 +67,7 @@ const BrandTable = ({ brands }) => {
                             variant="outline"
                             rightIcon={<IconChevronDown size={16} />}
                         >
-                            Brand
+                            Attributes
                         </Button>
                         <Button
                             variant="outline"
@@ -101,7 +99,10 @@ const BrandTable = ({ brands }) => {
                             }}
                         >
                             <tr>
-                                <th style={{ padding: "16px 24px" }}>Brand</th>
+                                <th style={{ padding: "16px 24px" }}>
+                                    Attribute
+                                </th>
+                                <th style={{ padding: "16px 24px" }}>Values</th>
                                 <th style={{ padding: "16px 24px" }}>
                                     Created At
                                 </th>
@@ -111,49 +112,34 @@ const BrandTable = ({ brands }) => {
                                 </th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            {brands?.data?.map((item) => (
+                            {attributes?.data?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
                                         borderBottom: `1px solid ${theme.colors.gray[1]}`,
                                     }}
                                 >
-                                    <td style={{ padding: "12px 24px" }}>
-                                        <Group spacing="md">
-                                            <div className="flex flex-row items-center gap-x-3">
-                                                <img
-                                                    src={item?.logo}
-                                                    alt={item?.name}
-                                                    style={{
-                                                        width: 40,
-                                                        height: 40,
-                                                        borderRadius: 6,
-                                                        objectFit: "cover",
-                                                        backgroundColor:
-                                                            theme.colors
-                                                                .gray[2],
-                                                    }}
-                                                />
-                                                <span
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        fontSize: "14px",
-                                                    }}
-                                                >
-                                                    {item?.name}
-                                                </span>
-                                            </div>
-                                        </Group>
+                                    <td
+                                        style={{
+                                            padding: "12px 24px",
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        {item?.name}
                                     </td>
 
+                                    <td style={{ padding: "12px 24px" }}>
+                                        {item?.values?.map((vlu) => (
+                                            <span>{vlu?.value} , </span>
+                                        ))}
+                                    </td>
                                     <td style={{ padding: "12px 24px" }}>
                                         {item?.created_at}
                                     </td>
-
                                     <td style={{ padding: "12px 24px" }}>
                                         <Badge
+                                            //variant="light"
                                             radius="sm"
                                             className={`${
                                                 item?.status === "draft"
@@ -164,12 +150,11 @@ const BrandTable = ({ brands }) => {
                                             {item.status}
                                         </Badge>
                                     </td>
-
                                     <td>
                                         <Group justify="space-between" grow>
                                             <ActionIcon
                                                 variant="outline"
-                                                className="py-2 px-2 shadow"
+                                                className=" py-2 px-2 shadow "
                                                 size="md"
                                                 onClick={() =>
                                                     handleEdit(item?.id)
@@ -181,7 +166,7 @@ const BrandTable = ({ brands }) => {
                                             <ActionIcon
                                                 variant="filled"
                                                 size="md"
-                                                className="py-2 px-2 shadow"
+                                                className=" py-2 px-2 shadow "
                                                 onClick={() =>
                                                     handleDelete(item?.id)
                                                 }
@@ -200,4 +185,4 @@ const BrandTable = ({ brands }) => {
     );
 };
 
-export default BrandTable;
+export default AttributeTable;

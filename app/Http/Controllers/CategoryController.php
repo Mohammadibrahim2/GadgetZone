@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\CategoryEnums;
+use App\Enums\GlobalEnums;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
@@ -33,7 +33,7 @@ class CategoryController extends Controller
                 'title' => $request->validated('title'),
                 'description' => $request->validated('description'),
                 'slug' => Str::slug($request->validated('title')),
-                'status' => $request->validated('status') ? $request->validated('status') : CategoryEnums::DARFT->value
+                'status' => $request->validated('status') ? $request->validated('status') : GlobalEnums::DARFT->value
             ]);
             if ($category) {
                 return redirect()->route('categories.categories');
@@ -60,7 +60,7 @@ class CategoryController extends Controller
                 'title' => $request->validated('title'),
                 'description' => $request->validated('description'),
                 'slug' => Str::slug($request->validated('title')),
-                'status' => $request->validated('status') ? $request->validated('status') : CategoryEnums::DARFT->value
+                'status' => $request->validated('status') ? $request->validated('status') : GlobalEnums::DARFT->value
             ]);
 
             if ($updatedData) {

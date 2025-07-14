@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Http\Services\RolePermission;
+namespace App\Http\Services\RolePErmission;
 
 class RolePermissionService
 {

@@ -20,19 +20,16 @@ import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 
-const BrandTable = ({ brands }) => {
+const ColorTable = ({ colors }) => {
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
-    console.log(brands, "brands");
-
     const handleEdit = (id) => {
-        console.log(id, "idd");
-        const response = router.get(route("brands.edit", { id: id }), {
+        router.get(route("colors.edit", { id: id }), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
-                    message: "Category created successfully",
+                    message: "Color loaded for editing",
                     color: "teal",
                     icon: <IconCheck size={18} />,
                     withCloseButton: true,
@@ -40,12 +37,13 @@ const BrandTable = ({ brands }) => {
             },
         });
     };
+
     const handleDelete = (id) => {
-        router.delete(route("brands.delete", { id: id }), {
+        router.delete(route("colors.delete", { id: id }), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
-                    message: "Category deleted successfully",
+                    message: "Color deleted successfully",
                     color: "teal",
                     icon: <IconCheck size={18} />,
                     withCloseButton: true,
@@ -53,12 +51,13 @@ const BrandTable = ({ brands }) => {
             },
         });
     };
+
     return (
         <>
             <Paper withBorder p="md" mb="md" radius="md">
                 <Group position="apart">
                     <TextInput
-                        placeholder="Search sub categories..."
+                        placeholder="Search colors..."
                         icon={<IconSearch size={16} />}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.currentTarget.value)}
@@ -69,7 +68,7 @@ const BrandTable = ({ brands }) => {
                             variant="outline"
                             rightIcon={<IconChevronDown size={16} />}
                         >
-                            Brand
+                            Sort
                         </Button>
                         <Button
                             variant="outline"
@@ -101,9 +100,10 @@ const BrandTable = ({ brands }) => {
                             }}
                         >
                             <tr>
-                                <th style={{ padding: "16px 24px" }}>Brand</th>
+                                <th style={{ padding: "16px 24px" }}>Name</th>
+                                <th style={{ padding: "16px 24px" }}>Color</th>
                                 <th style={{ padding: "16px 24px" }}>
-                                    Created At
+                                    Hex Code
                                 </th>
                                 <th style={{ padding: "16px 24px" }}>Status</th>
                                 <th style={{ padding: "16px 24px" }}>
@@ -113,7 +113,7 @@ const BrandTable = ({ brands }) => {
                         </thead>
 
                         <tbody>
-                            {brands?.data?.map((item) => (
+                            {colors?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
@@ -121,50 +121,36 @@ const BrandTable = ({ brands }) => {
                                     }}
                                 >
                                     <td style={{ padding: "12px 24px" }}>
-                                        <Group spacing="md">
-                                            <div className="flex flex-row items-center gap-x-3">
-                                                <img
-                                                    src={item?.logo}
-                                                    alt={item?.name}
-                                                    style={{
-                                                        width: 40,
-                                                        height: 40,
-                                                        borderRadius: 6,
-                                                        objectFit: "cover",
-                                                        backgroundColor:
-                                                            theme.colors
-                                                                .gray[2],
-                                                    }}
-                                                />
-                                                <span
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        fontSize: "14px",
-                                                    }}
-                                                >
-                                                    {item?.name}
-                                                </span>
-                                            </div>
-                                        </Group>
+                                        {item.name}
                                     </td>
-
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item?.created_at}
+                                        <div
+                                            style={{
+                                                width: "24px",
+                                                height: "24px",
+                                                backgroundColor: item.hex_code,
+                                                borderRadius: "4px",
+                                                border: `1px solid ${theme.colors.gray[3]}`,
+                                            }}
+                                        />
                                     </td>
-
+                                    <td style={{ padding: "12px 24px" }}>
+                                        {item.hex_code}
+                                    </td>
                                     <td style={{ padding: "12px 24px" }}>
                                         <Badge
-                                            radius="sm"
-                                            className={`${
-                                                item?.status === "draft"
-                                                    ? "text-gray-500 capitalize"
-                                                    : "text-green-600 dark:text-green-500 capitalize"
-                                            }`}
+                                        // radius="sm"
+                                        // className={`${
+                                        //     item.status === "published"
+                                        //         ? "text-green-600 dark:text-green-500 capitalize"
+                                        //         : item.status !== "draft"
+                                        //         ? "text-yellow-600 dark:text-green-500 capitalize"
+                                        //         : "text-gray-500 capitalize"
+                                        // }`}
                                         >
                                             {item.status}
                                         </Badge>
                                     </td>
-
                                     <td>
                                         <Group justify="space-between" grow>
                                             <ActionIcon
@@ -172,7 +158,7 @@ const BrandTable = ({ brands }) => {
                                                 className="py-2 px-2 shadow"
                                                 size="md"
                                                 onClick={() =>
-                                                    handleEdit(item?.id)
+                                                    handleEdit(item.id)
                                                 }
                                             >
                                                 <IconEdit size={20} />
@@ -180,10 +166,11 @@ const BrandTable = ({ brands }) => {
 
                                             <ActionIcon
                                                 variant="filled"
+                                                color="red"
                                                 size="md"
                                                 className="py-2 px-2 shadow"
                                                 onClick={() =>
-                                                    handleDelete(item?.id)
+                                                    handleDelete(item.id)
                                                 }
                                             >
                                                 <IconTrash size={20} />
@@ -200,4 +187,4 @@ const BrandTable = ({ brands }) => {
     );
 };
 
-export default BrandTable;
+export default ColorTable;

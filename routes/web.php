@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +59,30 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [BrandController::class, 'edit'])->name('edit');
         Route::post('/update', [BrandController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [BrandController::class, 'destroy'])->name('delete');
+    });
+    //attribites
+    Route::group(['prefix' => 'attributes', 'as' => 'attributes.'], function () {
+        Route::get('/attributes', [AttributeController::class, 'index'])->name('index');
+        Route::get('/create', [AttributeController::class, 'create'])->name('create');
+        Route::post('/store', [AttributeController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AttributeController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [AttributeController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [AttributeController::class, 'destroy'])->name('delete');
+    });
+    //product
+    Route::group(['prefix' => 'products', 'as' => 'products.'], function () {
+        Route::get('/products', [ProductController::class, 'index'])->name('index');
+        Route::get('/create', [ProductController::class, 'create'])->name('create');
+        Route::post('/store', [ProductController::class, 'store'])->name('store');
+    });
+
+    Route::group(['prefix' => 'colors', 'as' => 'colors.'], function () {
+        Route::get('/colors', [ColorController::class, 'index'])->name('index');
+        Route::get('/create', [ColorController::class, 'create'])->name('create');
+        Route::post('/store', [ColorController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [ColorController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [ColorController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [ColorController::class, 'destroy'])->name('delete');
     });
 });
 

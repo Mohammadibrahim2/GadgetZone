@@ -8,57 +8,57 @@ import ButtonWithIcon from "@/Components/button/ButtonWithIcon";
 import { useState } from "react";
 import CategoryTable from "./Table";
 import { router, usePage } from "@inertiajs/react";
+import BrandTable from "./Table";
+import ColorTable from "./Table";
 
-const CategoryIndex = () => {
-    const [opened, { open, close }] = useDisclosure(false);
-    //const [opened, setOpened] = useState(false);
-    // const handleSubmit = () => {
-    //     router.get(route("categories.create"));
-    // };
-    const { customers } = usePage().props;
-    console.log(customers);
+const BrandIndex = () => {
+    const { colors } = usePage().props;
+    // const [opened, { open, close }] = useDisclosure(false);
+    const [opened, setOpened] = useState(false);
+    const handleSubmit = () => {
+        router.get(route("colors.create"));
+    };
     return (
         <Box className="w-full p-4">
             {/* Header section with proper alignment */}
 
             <div className="flex justify-between mb-8 px-4">
                 <div>
-                    <Modal
-                        opened={opened}
-                        onClose={close}
-                        title="Authentication"
-                        centered
-                        zIndex={9999} // ✅ উচ্চতর z-index দিন
-                        withinPortal={true}
-                    >
-                        <h1>dhjhbahbhjabkjbf</h1>
-                    </Modal>
                     <Title order={2} className="text-xl">
                         {" "}
-                        Customers
+                        Colors
                     </Title>
                     <Title order={6} color="dimmed" mt={4}>
-                        Manage your Customer
+                        Manage your colors
                     </Title>
                 </div>
                 <ButtonWithIcon
-                    title="Add new"
+                    title="Add NEw"
                     iconLeft={<IconPlus size={16} />}
                     variant="brand"
-                    onClick={open}
+                    onClick={handleSubmit}
                     className="mr-6"
                 />
             </div>
 
-            <CategoryTable />
+            <Modal
+                opened={opened}
+                onClose={() => setOpened(false)}
+                title="Authentication"
+                centered
+                zIndex={10000}
+            >
+                <h1>dhjhbahbhjabkjbf</h1>
+            </Modal>
+            <ColorTable colors={colors} />
         </Box>
     );
 };
 
-CategoryIndex.layout = (page) => (
-    <MainLayout title="Categories" meta="Category Management">
+BrandIndex.layout = (page) => (
+    <MainLayout title="Colors" meta="Colors Management">
         {page}
     </MainLayout>
 );
 
-export default CategoryIndex;
+export default BrandIndex;

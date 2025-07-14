@@ -1,6 +1,6 @@
 import "../css/app.css";
 import "./bootstrap";
-
+import "@mantine/core/styles.css";
 import { createInertiaApp } from "@inertiajs/react";
 import { MantineProvider } from "@mantine/core";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
@@ -20,7 +20,6 @@ createInertiaApp({
 
         root.render(
             <MantineProvider
-                MantineProvider
                 withGlobalStyles
                 withNormalizeCSS
                 theme={{

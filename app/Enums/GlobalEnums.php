@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum CategoryEnums: String
+enum GlobalEnums: String
 {
     case PUBLISHED = 'published';
     case DARFT = 'draft';

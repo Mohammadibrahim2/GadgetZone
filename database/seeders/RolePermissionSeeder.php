@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-// ✅ আপনার RolePermissionService ক্লাসের সঠিক namespace ব্যবহার করুন
-use App\Http\Services\RolePermission\RolePermissionService;
+use App\Http\Services\RolePErmission\RolePermissionService;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;

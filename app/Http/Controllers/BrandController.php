@@ -79,7 +79,8 @@ class BrandController extends Controller
      */
     public function edit($id)
     {
-        $brand = Brand::findOrFail($id)->select('id', 'name', 'logo', 'status', 'created_at')->first();
+        $brand = Brand::findOrFail($id);
+        $brand->select('id', 'name', 'logo', 'status', 'created_at');
         return Inertia::render('Brands/Form')->with(['brand' => new BrandResource($brand)]);
     }
 

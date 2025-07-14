@@ -23,18 +23,14 @@ const BrandForm = () => {
     });
     const { brand } = usePage().props;
 
-    useState(() => {
-        setValue("name", brand?.data?.name);
-        setValue("logo", brand?.data?.logo);
-        setValue("status", brand?.data?.status);
-        setValue("id", brand?.data?.id);
-    }, [brand?.data?.id]);
+    console.log(brand, "brand");
 
     const [preview, setPreview] = useState(null);
     const logo = watch("logo");
 
     const onSubmit = (data) => {
         let id = brand?.data?.id;
+
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("status", data.status);
@@ -47,13 +43,13 @@ const BrandForm = () => {
             router.post(route("brands.update"), formData, {
                 forceFormData: true,
                 onSuccess: () => {
-                    notifications.show({
-                        title: "Success!",
-                        message: "Brand created successfully",
-                        color: "green",
-                        icon: <IconCheck size={18} />,
-                        withCloseButton: true,
-                    });
+                    // notifications.show({
+                    //     title: "Success!",
+                    //     message: "Brand created successfully",
+                    //     color: "green",
+                    //     icon: <IconCheck size={18} />,
+                    //     withCloseButton: true,
+                    // });
                 },
             });
             reset();
@@ -62,13 +58,13 @@ const BrandForm = () => {
             router.post(route("brands.store"), formData, {
                 forceFormData: true,
                 onSuccess: () => {
-                    notifications.show({
-                        title: "Success!",
-                        message: "Brand created successfully",
-                        color: "green",
-                        icon: <IconCheck size={18} />,
-                        withCloseButton: true,
-                    });
+                    // notifications.show({
+                    //     title: "Success!",
+                    //     message: "Brand created successfully",
+                    //     color: "green",
+                    //     icon: <IconCheck size={18} />,
+                    //     withCloseButton: true,
+                    // });
                 },
             });
             reset();
@@ -92,7 +88,12 @@ const BrandForm = () => {
         setValue("logo", null);
         setPreview(null);
     };
-
+    useState(() => {
+        setValue("name", brand?.data?.name);
+        setValue("logo", brand?.data?.logo);
+        setValue("status", brand?.data?.status);
+        setValue("id", brand?.data?.id);
+    }, [brand?.data?.id]);
     return (
         <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Add Brand</h1>

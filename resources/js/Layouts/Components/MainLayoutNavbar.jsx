@@ -16,10 +16,22 @@ import {
     IconTrianglePlus2,
     IconTriangleSquareCircleFilled,
     IconTriangles,
+    IconBox,
+    IconUsers,
+    IconChecklist,
+    IconColorPicker,
+    IconColorSwatch,
+    IconColorFilter,
+    IconBrandAdobe,
+    IconBrandAbstract,
+    IconBrandAirbnb,
+    IconBrandAmazon,
+    IconBrandAirtable,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import { Indicator } from "@mantine/core";
 
 const mainLinks = [
     {
@@ -30,25 +42,20 @@ const mainLinks = [
         subLinks: [],
     },
     {
-        icon: IconBulb,
-        label: "Hotels",
-        route: "customers.customers",
+        icon: IconBox,
+        label: "Product",
+        route: "products.index",
         notifications: 3,
         // subLinks: [
         //     { label: "All Hotels", route: "hotels.index" },
         //     { label: "Create New", route: "hotels.create" },
-        // ],
+        // ],attributes
     },
     {
-        icon: IconCheckbox,
-        label: "Rooms",
-        route: "customers.customers",
-        notifications: 4,
-        // subLinks: [
-        //     { label: "My Tasks", route: "rooms.tasks" },
-        //     { label: "Assigned", route: "rooms.assigned" },
-        //     { label: "Completed", route: "rooms.completed" },
-        // ],
+        icon: IconChecklist,
+        label: "Variant Attributes",
+        route: "attributes.index",
+        subLinks: [],
     },
     {
         icon: IconCategory,
@@ -57,7 +64,7 @@ const mainLinks = [
         subLinks: [],
     },
     {
-        icon: IconUser,
+        icon: IconUsers,
         label: "Customers",
         route: "customers.customers",
         // subLinks: [
@@ -66,10 +73,16 @@ const mainLinks = [
         // ],
     },
     {
-        icon: IconTriangles,
+        icon: IconBrandAirtable,
         label: "Brands",
         route: "brands.index",
         notifications: 2,
+        subLinks: [],
+    },
+    {
+        icon: IconColorFilter,
+        label: "Color",
+        route: "colors.index",
         subLinks: [],
     },
 ];
@@ -177,12 +190,21 @@ function MainLayoutNavbar() {
                 className="flex items-center p-4 border-b border-gray-200 hover:bg-gray-50"
             >
                 <div className="relative">
-                    <img
-                        className="w-10 h-10 rounded-full"
-                        src="https://i.pinimg.com/736x/c4/65/c5/c465c58541e0841fcf56b83cd8c3f45f.jpg"
-                        alt={auth?.user?.name}
-                    />
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                    <Indicator
+                        inline
+                        size={12}
+                        offset={6}
+                        position="bottom-end"
+                        withBorder
+                        processing
+                        color="green"
+                    >
+                        <img
+                            className="w-10 h-10 rounded-full"
+                            src={auth?.user?.profile_image}
+                            alt={auth?.user?.name}
+                        />
+                    </Indicator>
                 </div>
                 <div className="ml-3">
                     <p className="text-sm font-medium text-gray-700">

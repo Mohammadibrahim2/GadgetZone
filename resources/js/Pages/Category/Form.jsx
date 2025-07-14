@@ -34,22 +34,22 @@ const CategoryForm = () => {
         if (id) {
             router.post(route("categories.update", id), data, {
                 onSuccess: () => {
-                    notifications.show({
-                        title: "Success!",
-                        message: "Category created successfully",
-                        color: "green",
-                        icon: <IconCheck size={18} />,
-                        withCloseButton: true,
-                    });
+                    // notifications.show({
+                    //     title: "Success!",
+                    //     message: "Category created successfully",
+                    //     color: "green",
+                    //     icon: <IconCheck size={18} />,
+                    //     withCloseButton: true,
+                    // });
                     reset();
                 },
                 onError: (errors) => {
-                    notifications.show({
-                        title: "Error!",
-                        message: Object.values(errors).join("\n"),
-                        color: "red",
-                        withCloseButton: true,
-                    });
+                    // notifications.show({
+                    //     title: "Error!",
+                    //     message: Object.values(errors).join("\n"),
+                    //     color: "red",
+                    //     withCloseButton: true,
+                    // });
                 },
                 onFinish: () => {
                     setIsSubmitting(false);
@@ -68,12 +68,12 @@ const CategoryForm = () => {
                     reset();
                 },
                 onError: (errors) => {
-                    notifications.show({
-                        title: "Error!",
-                        message: Object.values(errors).join("\n"),
-                        color: "red",
-                        withCloseButton: true,
-                    });
+                    // notifications.show({
+                    //     title: "Error!",
+                    //     message: Object.values(errors).join("\n"),
+                    //     color: "red",
+                    //     withCloseButton: true,
+                    // });
                 },
                 onFinish: () => {
                     setIsSubmitting(false);

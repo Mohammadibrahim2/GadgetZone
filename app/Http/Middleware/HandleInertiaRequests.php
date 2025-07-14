@@ -42,6 +42,8 @@ class HandleInertiaRequests extends Middleware
                         'name' => $user->name,
                         'email' => $user->email,
                         'phone' => $user->phone,
+                        'profile_image' => asset('storage/' . $user->profile_image),
+                        'profileImage' => $user->profile_image,
                         'role' => $user->getRoleNames()->first()
 
                     ];

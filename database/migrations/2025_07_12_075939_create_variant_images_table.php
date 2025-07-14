@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\CategoryEnums;
-use App\Enums\GlobalEnums;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('variant_images', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('slug');
-            $table->longText('description', 100);
-            $table->string('status')->default(GlobalEnums::DARFT->value);
+            $table->foreignId('product_variant_id')->constrained('product_variants')->onDelete('cascade');
+            $table->string('image_path');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('variant_images');
     }
 };

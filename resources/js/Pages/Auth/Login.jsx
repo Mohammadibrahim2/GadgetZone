@@ -12,6 +12,7 @@ export default function Login({ status, canResetPassword }) {
         email: "",
         password: "",
         remember: false,
+        id: 2,
     });
 
     const submit = (e) => {

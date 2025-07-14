@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import { Button, Indicator } from "@mantine/core";
 import {
     IconSearch,
     IconBell,
@@ -15,7 +15,6 @@ import { useState } from "react";
 
 function MainTopNavbar() {
     const { auth } = usePage().props;
-    console.log(auth?.user);
     const [currentShop, setCurrentShop] = useState("Main Store");
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -159,11 +158,21 @@ function MainTopNavbar() {
                                 onClick={() => setProfileOpen(!profileOpen)}
                                 className="flex items-center space-x-2 focus:outline-none"
                             >
-                                <img
-                                    className="h-8 w-8 rounded-full"
-                                    src="https://i.pinimg.com/736x/c4/65/c5/c465c58541e0841fcf56b83cd8c3f45f.jpg"
-                                    alt="User profile"
-                                />
+                                <Indicator
+                                    inline
+                                    size={12}
+                                    offset={6}
+                                    position="bottom-end"
+                                    withBorder
+                                    processing
+                                    color="green"
+                                >
+                                    <img
+                                        className="h-8 w-8 rounded-full"
+                                        src={auth?.user?.profile_image}
+                                        alt="User profile"
+                                    />
+                                </Indicator>
                                 <span className="hidden md:inline text-sm font-medium text-gray-700">
                                     {auth?.user?.name}
                                 </span>

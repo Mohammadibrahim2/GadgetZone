@@ -38,13 +38,14 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // dd($request->all());
+
         // $credentials = $request->validate([
         //     'eamil' => 'unique|email',
         //     'password' => 'required'
         // ]);
         if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerateToken();
+
             return to_route('dashboard');
             // return  redirect()->intended('dashboard');
         }
@@ -67,4 +68,6 @@ class AuthController extends Controller
             Log::error(['error' => $e->getMessage()]);
         }
     }
+
+    public function storeMyProfile(Request $request) {}
 }
