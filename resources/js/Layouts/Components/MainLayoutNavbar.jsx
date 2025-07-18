@@ -27,6 +27,12 @@ import {
     IconBrandAirbnb,
     IconBrandAmazon,
     IconBrandAirtable,
+    IconUserBolt,
+    IconUsersGroup,
+    IconUserShare,
+    IconMenuOrder,
+    IconPackage,
+    IconPackages,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
@@ -63,15 +69,7 @@ const mainLinks = [
         route: "categories.categories",
         subLinks: [],
     },
-    {
-        icon: IconUsers,
-        label: "Customers",
-        route: "customers.customers",
-        // subLinks: [
-        //     { label: "Reports", route: "analytics.reports" },
-        //     { label: "Statistics", route: "analytics.statistics" },
-        // ],
-    },
+
     {
         icon: IconBrandAirtable,
         label: "Brands",
@@ -84,6 +82,35 @@ const mainLinks = [
         label: "Color",
         route: "colors.index",
         subLinks: [],
+    },
+    {
+        icon: IconUsersGroup,
+        label: "Customers",
+        route: "customers.customers",
+        // subLinks: [
+        //     { label: "Reports", route: "analytics.reports" },
+        //     { label: "Statistics", route: "analytics.statistics" },
+        // ],
+    },
+    {
+        icon: IconPackages,
+        label: "Order",
+        route: "orders.index",
+        notifications: 3,
+        // subLinks: [
+        //     { label: "All Hotels", route: "hotels.index" },
+        //     { label: "Create New", route: "hotels.create" },
+        // ],attributes
+    },
+    {
+        icon: IconPackages,
+        label: "MarketPalce",
+        route: "orders.index",
+        notifications: 3,
+        // subLinks: [
+        //     { label: "All Hotels", route: "hotels.index" },
+        //     { label: "Create New", route: "hotels.create" },
+        // ],attributes
     },
 ];
 
@@ -185,39 +212,40 @@ function MainLayoutNavbar() {
     return (
         <div className="flex flex-col h-screen w-64 bg-white border-r border-gray-200">
             {/* User Profile Section */}
-            <Link
-                href={route("profile.edit", { id: auth?.user?.id })}
-                className="flex items-center p-4 border-b border-gray-200 hover:bg-gray-50"
-            >
-                <div className="relative">
-                    <Indicator
-                        inline
-                        size={12}
-                        offset={6}
-                        position="bottom-end"
-                        withBorder
-                        processing
-                        color="green"
-                    >
-                        <img
-                            className="w-10 h-10 rounded-full"
-                            src={auth?.user?.profile_image}
-                            alt={auth?.user?.name}
-                        />
-                    </Indicator>
-                </div>
-                <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-700">
-                        {auth.user.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                        {auth.user.role === "super_admin"
-                            ? "Super admin"
-                            : auth?.user?.role || "User"}
-                    </p>
-                </div>
-            </Link>
-
+            {auth.user && (
+                <Link
+                    href={route("profile.edit", { id: auth?.user?.id })}
+                    className="flex items-center p-4 border-b border-gray-200 hover:bg-gray-50"
+                >
+                    <div className="relative">
+                        <Indicator
+                            inline
+                            size={12}
+                            offset={6}
+                            position="bottom-end"
+                            withBorder
+                            processing
+                            color="green"
+                        >
+                            <img
+                                className="w-10 h-10 rounded-full"
+                                src={auth?.user?.profile_image}
+                                alt={auth?.user?.name}
+                            />
+                        </Indicator>
+                    </div>
+                    <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-700">
+                            {auth.user.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                            {auth.user.role === "super_admin"
+                                ? "Super admin"
+                                : auth?.user?.role || "User"}
+                        </p>
+                    </div>
+                </Link>
+            )}
             {/* Main Navigation Links */}
             <div className="flex-1 overflow-y-auto">
                 <nav className="p-2">

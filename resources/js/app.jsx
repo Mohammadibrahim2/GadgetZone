@@ -5,6 +5,8 @@ import { createInertiaApp } from "@inertiajs/react";
 import { MantineProvider } from "@mantine/core";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
+import { CartProvider } from "./hooks/Cart/CartContext";
+import { Notifications } from "@mantine/notifications";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -40,7 +42,10 @@ createInertiaApp({
                     primaryColor: "primary",
                 }}
             >
-                <App {...props} />
+                <CartProvider>
+                    <Notifications position="top-right" />
+                    <App {...props} />
+                </CartProvider>
             </MantineProvider>
         );
     },

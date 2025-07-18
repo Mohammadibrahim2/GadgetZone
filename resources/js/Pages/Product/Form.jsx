@@ -20,6 +20,7 @@ import {
     LoadingOverlay,
     ColorSwatch,
     Badge,
+    rem,
 } from "@mantine/core";
 import {
     IconTrash,
@@ -40,6 +41,8 @@ const ProductForm = () => {
     const theme = useMantineTheme();
     const { categories, brands, attributes, colors, product } = usePage().props;
     const [loading, setLoading] = useState(false);
+    const [featuredPreview, setFeaturedPreview] = useState(null);
+    const [variantPreviews, setVariantPreviews] = useState({});
 
     // Transform data for Select components
     const brandData =
@@ -61,61 +64,94 @@ const ProductForm = () => {
             color: color.hex_code,
         })) || [];
 
-    // Attribute data with IDs
     const attributeFields =
         attributes?.map((attr) => ({
-            id: attr.id, // Attribute ID
+            id: attr.id,
             name: attr.name,
             values: attr.values.map((val) => ({
-                id: val.id, // Value ID
-                value: val.id.toString(), // Using ID as value
-                label: val.value, // Display text
+                id: val.id,
+                value: val.id.toString(),
+                label: val.value,
             })),
         })) || [];
 
-    // Image previews
-    const [featuredPreview, setFeaturedPreview] = useState(
-        product?.featured_image_url || null
-    );
-    const [variantPreviews, setVariantPreviews] = useState(
-        product?.variant_previews || {}
-    );
-
-    // Form setup with default values
     const {
         control,
         handleSubmit,
         watch,
+        reset,
         setValue,
         trigger,
         formState: { errors, isSubmitting },
     } = useForm({
         defaultValues: {
-            title: product?.title || "",
-            slug: product?.slug || "",
-            description: product?.description || "",
-            brand_id: product?.brand_id?.toString() || "",
-            category_id: product?.category_id?.toString() || "",
-            sku: product?.sku || "",
-            status: product?.status || "draft",
+            title: "",
+            slug: "",
+            description: "",
+            brand_id: "",
+            category_id: "",
+            sku: "",
+            status: "draft",
             featured_image: null,
-            variants: product?.variants || [],
-            attributes:
-                attributes?.reduce((acc, attr) => {
-                    // Initialize with existing attribute values if editing
-                    acc[attr.name] =
-                        product?.attributes?.[attr.id]?.map((v) =>
-                            v.id.toString()
-                        ) || [];
-                    return acc;
-                }, {}) || {},
+            variants: [],
+            attributes: {},
         },
     });
 
-    // Auto-generate slug from title
+    // Initialize form with product data
+    useEffect(() => {
+        if (product) {
+            const initialAttributes = {};
+            if (product.data.attributes) {
+                product.data.attributes.forEach((attr) => {
+                    initialAttributes[attr.name] = attr.values.map((v) =>
+                        v.id.toString()
+                    );
+                });
+            }
+
+            reset({
+                title: product.data.title || "",
+                slug: product.data.slug || "",
+                description: product.data.description || "",
+                brand_id: product.data.brand?.id?.toString() || "",
+                category_id: product.data.category?.id?.toString() || "",
+                sku: product.data.sku || "",
+                status: product.data.status || "draft",
+                featured_image: null,
+                variants:
+                    product.data.variants?.map((variant) => ({
+                        id: variant.id,
+                        color_id: variant.color_id?.toString(),
+                        price: variant.price?.toString(),
+                        stock: variant.stock?.toString(),
+                        images: [],
+                    })) || [],
+                attributes: initialAttributes,
+            });
+
+            if (product.data.featured_image) {
+                setFeaturedPreview(product.data.featured_image);
+            }
+
+            if (product.data.variants) {
+                const previews = {};
+                product.data.variants.forEach((variant, index) => {
+                    if (variant.images?.length > 0) {
+                        previews[index] = variant.images.map((img) => img.path);
+                    }
+                });
+                setVariantPreviews(previews);
+            }
+        }
+    }, [product, reset]);
+
     useEffect(() => {
         const subscription = watch((value, { name }) => {
-            if (name === "title" && !product?.slug) {
+            if (
+                name === "title" &&
+                (!product?.data.slug || product.data.slug === "")
+            ) {
                 const slug = value.title
                     ?.toLowerCase()
                     .replace(/[^\w\s]/gi, "")
@@ -126,9 +162,8 @@ const ProductForm = () => {
             }
         });
         return () => subscription.unsubscribe();
-    }, [watch, setValue, trigger, product?.slug]);
+    }, [watch, setValue, trigger, product?.data.slug]);
 
-    // Handle image uploads
     const handleFeaturedImageChange = (files) => {
         if (files && files.length > 0) {
             const file = files[0];
@@ -141,26 +176,22 @@ const ProductForm = () => {
 
     const handleVariantImagesChange = (files, index) => {
         const previews = { ...variantPreviews };
-        previews[index] = Array.from(files).map((file) =>
+        const newPreviews = Array.from(files).map((file) =>
             URL.createObjectURL(file)
         );
+
+        previews[index] = [...(previews[index] || []), ...newPreviews];
         setVariantPreviews(previews);
 
         const variants = [...watch("variants")];
-        variants[index].images = files;
+        variants[index].images = [...(variants[index].images || []), ...files];
         setValue("variants", variants);
     };
 
-    // Variant actions
     const addVariant = () => {
         setValue("variants", [
             ...watch("variants"),
-            {
-                color_id: "",
-                price: "",
-                stock: "",
-                images: [],
-            },
+            { color_id: "", price: "", stock: "", images: [] },
         ]);
     };
 
@@ -190,14 +221,11 @@ const ProductForm = () => {
         }
     };
 
-    // Submit handler with attribute ID processing
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-
             const formData = new FormData();
 
-            // Basic fields
             formData.append("title", data.title);
             formData.append("slug", data.slug);
             formData.append("description", data.description);
@@ -206,14 +234,12 @@ const ProductForm = () => {
             formData.append("sku", data.sku);
             formData.append("status", data.status);
 
-            // Featured image
             if (data.featured_image) {
                 formData.append("featured_image", data.featured_image);
-            } else if (product?.featured_image_url) {
-                formData.append("featured_image", product.featured_image_url);
+            } else if (featuredPreview && typeof featuredPreview !== "string") {
+                formData.append("featured_image", featuredPreview);
             }
 
-            // Process attributes with IDs
             const attributesPayload = {};
             attributeFields.forEach((attr) => {
                 const selectedValues = data.attributes[attr.name] || [];
@@ -225,7 +251,6 @@ const ProductForm = () => {
             });
             formData.append("attributes", JSON.stringify(attributesPayload));
 
-            // Variants
             data.variants.forEach((variant, index) => {
                 formData.append(
                     `variants[${index}][color_id]`,
@@ -233,6 +258,10 @@ const ProductForm = () => {
                 );
                 formData.append(`variants[${index}][price]`, variant.price);
                 formData.append(`variants[${index}][stock]`, variant.stock);
+
+                if (variant.id) {
+                    formData.append(`variants[${index}][id]`, variant.id);
+                }
 
                 if (variant.images) {
                     Array.from(variant.images).forEach((image, imgIndex) => {
@@ -243,10 +272,6 @@ const ProductForm = () => {
                     });
                 }
             });
-
-            // Submit data
-            // const url = product ? `/products/${product.id}` : "/products";
-            // const method = product ? "put" : "post";
 
             router.post(route("products.store"), formData, {
                 onSuccess: () => {
@@ -274,7 +299,6 @@ const ProductForm = () => {
         }
     };
 
-    // Color Select Item Component
     const ColorSelectItem = ({ color, label, ...rest }) => (
         <div
             {...rest}
@@ -285,26 +309,14 @@ const ProductForm = () => {
         </div>
     );
 
-    // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-            },
-        },
+        visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
     };
 
     const itemVariants = {
         hidden: { y: 20, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                duration: 0.5,
-            },
-        },
+        visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
     };
 
     return (
@@ -320,11 +332,10 @@ const ProductForm = () => {
                         onSubmit={handleSubmit(onSubmit)}
                         encType="multipart/form-data"
                     >
-                        <Stack spacing="lg">
-                            {/* Header */}
+                        <Stack gap="lg">
                             <motion.div variants={itemVariants}>
-                                <Group position="apart">
-                                    <Title order={3} weight={600}>
+                                <Group justify="space-between">
+                                    <Title order={3} fw={600}>
                                         {product
                                             ? "Edit Product"
                                             : "Create New Product"}
@@ -342,11 +353,10 @@ const ProductForm = () => {
                                 </Group>
                             </motion.div>
 
-                            {/* Basic Info */}
                             <motion.div variants={itemVariants}>
                                 <Grid gutter="xl">
-                                    <Grid.Col xs={12} md={8}>
-                                        <Stack spacing="sm">
+                                    <Grid.Col span={{ xs: 12, md: 8 }}>
+                                        <Stack gap="sm">
                                             <Controller
                                                 name="title"
                                                 control={control}
@@ -433,8 +443,8 @@ const ProductForm = () => {
                                         </Stack>
                                     </Grid.Col>
 
-                                    <Grid.Col xs={12} md={4}>
-                                        <Stack spacing="sm">
+                                    <Grid.Col span={{ xs: 12, md: 4 }}>
+                                        <Stack gap="sm">
                                             <Controller
                                                 name="sku"
                                                 control={control}
@@ -518,35 +528,29 @@ const ProductForm = () => {
                                 </Grid>
                             </motion.div>
 
-                            {/* Featured Image */}
                             <motion.div variants={itemVariants}>
                                 <Box>
-                                    <Text size="sm" weight={500} mb={4}>
+                                    <Text size="sm" fw={500} mb={4}>
                                         Featured Image
                                     </Text>
                                     {featuredPreview ? (
-                                        <Box
-                                            sx={{
-                                                position: "relative",
-                                                width: 150,
-                                            }}
-                                        >
+                                        <Box pos="relative" w={150}>
                                             <Image
                                                 src={featuredPreview}
                                                 alt="Featured preview"
                                                 radius="sm"
-                                                height={150}
-                                                width={150}
+                                                h={150}
+                                                w={150}
                                                 fit="cover"
                                             />
                                             <ActionIcon
                                                 color="red"
                                                 variant="filled"
                                                 size="sm"
-                                                sx={{
-                                                    position: "absolute",
+                                                style={{
                                                     top: -8,
                                                     right: -8,
+                                                    position: "absolute",
                                                 }}
                                                 onClick={() => {
                                                     setFeaturedPreview(null);
@@ -564,7 +568,7 @@ const ProductForm = () => {
                                             onDrop={handleFeaturedImageChange}
                                             accept={IMAGE_MIME_TYPE}
                                             maxFiles={1}
-                                            sx={{
+                                            style={{
                                                 width: 150,
                                                 height: 150,
                                                 display: "flex",
@@ -573,12 +577,12 @@ const ProductForm = () => {
                                                 borderStyle: "dashed",
                                             }}
                                         >
-                                            <Stack align="center" spacing={4}>
+                                            <Stack align="center" gap={4}>
                                                 <IconPhoto
                                                     size={32}
-                                                    color={theme.colors.gray[5]}
+                                                    c={theme.colors.gray[5]}
                                                 />
-                                                <Text size="xs" color="dimmed">
+                                                <Text size="xs" c="dimmed">
                                                     Upload image
                                                 </Text>
                                             </Stack>
@@ -587,8 +591,6 @@ const ProductForm = () => {
                                 </Box>
                             </motion.div>
 
-                            {/* Attributes */}
-                            {/* Attributes Section */}
                             {attributeFields.length > 0 && (
                                 <motion.div variants={itemVariants}>
                                     <Divider label="Attributes" />
@@ -596,9 +598,7 @@ const ProductForm = () => {
                                         {attributeFields.map((attr) => (
                                             <Grid.Col
                                                 key={attr.id}
-                                                xs={12}
-                                                sm={6}
-                                                md={4}
+                                                span={{ xs: 12, sm: 6, md: 4 }}
                                             >
                                                 <Controller
                                                     name={`attributes.${attr.name}`}
@@ -609,7 +609,10 @@ const ProductForm = () => {
                                                             data={attr.values}
                                                             placeholder={`Select ${attr.name}`}
                                                             clearable
-                                                            value={field.value}
+                                                            value={
+                                                                field.value ||
+                                                                []
+                                                            }
                                                             onChange={(
                                                                 selected
                                                             ) => {
@@ -625,11 +628,11 @@ const ProductForm = () => {
                                     </Grid>
                                 </motion.div>
                             )}
-                            {/* Variants */}
+
                             <motion.div variants={itemVariants}>
                                 <Divider label="Variants" />
                                 <Button
-                                    leftIcon={<IconPlus size={16} />}
+                                    leftSection={<IconPlus size={16} />}
                                     onClick={addVariant}
                                     variant="light"
                                     size="sm"
@@ -638,247 +641,259 @@ const ProductForm = () => {
                                     Add Variant
                                 </Button>
 
-                                <Stack spacing="md">
-                                    {watch("variants").map((variant, index) => (
-                                        <motion.div
-                                            key={index}
-                                            variants={itemVariants}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <Paper
-                                                p="sm"
-                                                withBorder
-                                                radius="md"
+                                <Stack gap="md">
+                                    {watch("variants")?.map(
+                                        (variant, index) => (
+                                            <motion.div
+                                                key={index}
+                                                variants={itemVariants}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.3 }}
                                             >
-                                                <Stack spacing="sm">
-                                                    <Group grow>
-                                                        <Controller
-                                                            name={`variants.${index}.color_id`}
-                                                            control={control}
-                                                            rules={{
-                                                                required:
-                                                                    "Color is required",
-                                                            }}
-                                                            render={({
-                                                                field,
-                                                                fieldState,
-                                                            }) => (
-                                                                <Select
-                                                                    label="Color"
-                                                                    placeholder="Select color"
-                                                                    data={
-                                                                        colorData
-                                                                    }
-                                                                    itemComponent={
-                                                                        ColorSelectItem
-                                                                    }
-                                                                    error={
-                                                                        fieldState
-                                                                            .error
-                                                                            ?.message
-                                                                    }
-                                                                    {...field}
-                                                                />
-                                                            )}
-                                                        />
-                                                        <Controller
-                                                            name={`variants.${index}.price`}
-                                                            control={control}
-                                                            rules={{
-                                                                required:
-                                                                    "Price is required",
-                                                                min: {
-                                                                    value: 0.01,
-                                                                    message:
-                                                                        "Price must be greater than 0",
-                                                                },
-                                                            }}
-                                                            render={({
-                                                                field,
-                                                                fieldState,
-                                                            }) => (
-                                                                <TextInput
-                                                                    label="Price"
-                                                                    type="number"
-                                                                    placeholder="0.00"
-                                                                    min="0.01"
-                                                                    step="0.01"
-                                                                    icon={
-                                                                        <IconCurrencyDollar
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
-                                                                    }
-                                                                    error={
-                                                                        fieldState
-                                                                            .error
-                                                                            ?.message
-                                                                    }
-                                                                    {...field}
-                                                                />
-                                                            )}
-                                                        />
-                                                        <Controller
-                                                            name={`variants.${index}.stock`}
-                                                            control={control}
-                                                            rules={{
-                                                                required:
-                                                                    "Stock is required",
-                                                                min: {
-                                                                    value: 0,
-                                                                    message:
-                                                                        "Stock cannot be negative",
-                                                                },
-                                                            }}
-                                                            render={({
-                                                                field,
-                                                                fieldState,
-                                                            }) => (
-                                                                <TextInput
-                                                                    label="Stock"
-                                                                    type="number"
-                                                                    placeholder="0"
-                                                                    min="0"
-                                                                    error={
-                                                                        fieldState
-                                                                            .error
-                                                                            ?.message
-                                                                    }
-                                                                    {...field}
-                                                                />
-                                                            )}
-                                                        />
-                                                        <Box mt={25}>
-                                                            <ActionIcon
-                                                                color="red"
-                                                                variant="light"
-                                                                onClick={() =>
-                                                                    removeVariant(
-                                                                        index
-                                                                    )
+                                                <Paper
+                                                    p="sm"
+                                                    withBorder
+                                                    radius="md"
+                                                >
+                                                    <Stack gap="sm">
+                                                        <Group grow>
+                                                            <Controller
+                                                                name={`variants.${index}.color_id`}
+                                                                control={
+                                                                    control
                                                                 }
-                                                            >
-                                                                <IconTrash
-                                                                    size={16}
-                                                                />
-                                                            </ActionIcon>
-                                                        </Box>
-                                                    </Group>
-
-                                                    {/* Variant Images */}
-                                                    <Box>
-                                                        <Text size="sm" mb={4}>
-                                                            Images
-                                                        </Text>
-                                                        <Group spacing="xs">
-                                                            {(
-                                                                variantPreviews[
-                                                                    index
-                                                                ] || []
-                                                            ).map(
-                                                                (
-                                                                    preview,
-                                                                    imgIndex
-                                                                ) => (
-                                                                    <Box
-                                                                        key={
-                                                                            imgIndex
+                                                                rules={{
+                                                                    required:
+                                                                        "Color is required",
+                                                                }}
+                                                                render={({
+                                                                    field,
+                                                                    fieldState,
+                                                                }) => (
+                                                                    <Select
+                                                                        label="Color"
+                                                                        placeholder="Select color"
+                                                                        data={
+                                                                            colorData
                                                                         }
-                                                                        sx={{
-                                                                            position:
-                                                                                "relative",
-                                                                        }}
-                                                                    >
-                                                                        <Image
-                                                                            src={
-                                                                                preview
-                                                                            }
-                                                                            width={
-                                                                                80
-                                                                            }
-                                                                            height={
-                                                                                80
-                                                                            }
-                                                                            radius="sm"
-                                                                            fit="cover"
-                                                                        />
-                                                                        <ActionIcon
-                                                                            color="red"
-                                                                            size="xs"
-                                                                            sx={{
-                                                                                position:
-                                                                                    "absolute",
-                                                                                top: -5,
-                                                                                right: -5,
-                                                                            }}
-                                                                            onClick={() =>
-                                                                                removeVariantImage(
-                                                                                    index,
-                                                                                    imgIndex
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <IconX
+                                                                        itemComponent={
+                                                                            ColorSelectItem
+                                                                        }
+                                                                        error={
+                                                                            fieldState
+                                                                                .error
+                                                                                ?.message
+                                                                        }
+                                                                        {...field}
+                                                                    />
+                                                                )}
+                                                            />
+                                                            <Controller
+                                                                name={`variants.${index}.price`}
+                                                                control={
+                                                                    control
+                                                                }
+                                                                rules={{
+                                                                    required:
+                                                                        "Price is required",
+                                                                    min: {
+                                                                        value: 0.01,
+                                                                        message:
+                                                                            "Price must be greater than 0",
+                                                                    },
+                                                                }}
+                                                                render={({
+                                                                    field,
+                                                                    fieldState,
+                                                                }) => (
+                                                                    <TextInput
+                                                                        label="Price"
+                                                                        type="number"
+                                                                        placeholder="0.00"
+                                                                        min="0.01"
+                                                                        step="0.01"
+                                                                        leftSection={
+                                                                            <IconCurrencyDollar
                                                                                 size={
-                                                                                    12
+                                                                                    16
                                                                                 }
                                                                             />
-                                                                        </ActionIcon>
-                                                                    </Box>
-                                                                )
-                                                            )}
-                                                            <Dropzone
-                                                                onDrop={(
-                                                                    files
-                                                                ) =>
-                                                                    handleVariantImagesChange(
-                                                                        files,
-                                                                        index
-                                                                    )
+                                                                        }
+                                                                        error={
+                                                                            fieldState
+                                                                                .error
+                                                                                ?.message
+                                                                        }
+                                                                        {...field}
+                                                                    />
+                                                                )}
+                                                            />
+                                                            <Controller
+                                                                name={`variants.${index}.stock`}
+                                                                control={
+                                                                    control
                                                                 }
-                                                                accept={
-                                                                    IMAGE_MIME_TYPE
-                                                                }
-                                                                multiple
-                                                                sx={{
-                                                                    width: 80,
-                                                                    height: 80,
-                                                                    display:
-                                                                        "flex",
-                                                                    alignItems:
-                                                                        "center",
-                                                                    justifyContent:
-                                                                        "center",
-                                                                    borderStyle:
-                                                                        "dashed",
+                                                                rules={{
+                                                                    required:
+                                                                        "Stock is required",
+                                                                    min: {
+                                                                        value: 0,
+                                                                        message:
+                                                                            "Stock cannot be negative",
+                                                                    },
                                                                 }}
-                                                            >
-                                                                <IconPhoto
-                                                                    size={24}
-                                                                    color={
-                                                                        theme
-                                                                            .colors
-                                                                            .gray[5]
+                                                                render={({
+                                                                    field,
+                                                                    fieldState,
+                                                                }) => (
+                                                                    <TextInput
+                                                                        label="Stock"
+                                                                        type="number"
+                                                                        placeholder="0"
+                                                                        min="0"
+                                                                        error={
+                                                                            fieldState
+                                                                                .error
+                                                                                ?.message
+                                                                        }
+                                                                        {...field}
+                                                                    />
+                                                                )}
+                                                            />
+                                                            <Box mt={25}>
+                                                                <ActionIcon
+                                                                    color="red"
+                                                                    variant="light"
+                                                                    onClick={() =>
+                                                                        removeVariant(
+                                                                            index
+                                                                        )
                                                                     }
-                                                                />
-                                                            </Dropzone>
+                                                                >
+                                                                    <IconTrash
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </ActionIcon>
+                                                            </Box>
                                                         </Group>
-                                                    </Box>
-                                                </Stack>
-                                            </Paper>
-                                        </motion.div>
-                                    ))}
+
+                                                        <Box>
+                                                            <Text
+                                                                size="sm"
+                                                                mb={4}
+                                                            >
+                                                                Images (Upload
+                                                                multiple for
+                                                                this variant)
+                                                            </Text>
+                                                            <Group gap="xs">
+                                                                {(
+                                                                    variantPreviews[
+                                                                        index
+                                                                    ] || []
+                                                                ).map(
+                                                                    (
+                                                                        preview,
+                                                                        imgIndex
+                                                                    ) => (
+                                                                        <Box
+                                                                            key={
+                                                                                imgIndex
+                                                                            }
+                                                                            pos="relative"
+                                                                        >
+                                                                            <Image
+                                                                                src={
+                                                                                    preview
+                                                                                }
+                                                                                w={
+                                                                                    80
+                                                                                }
+                                                                                h={
+                                                                                    80
+                                                                                }
+                                                                                radius="sm"
+                                                                                fit="cover"
+                                                                            />
+                                                                            <ActionIcon
+                                                                                color="red"
+                                                                                size="xs"
+                                                                                style={{
+                                                                                    top: -5,
+                                                                                    right: -5,
+                                                                                    position:
+                                                                                        "absolute",
+                                                                                }}
+                                                                                onClick={() =>
+                                                                                    removeVariantImage(
+                                                                                        index,
+                                                                                        imgIndex
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <IconX
+                                                                                    size={
+                                                                                        12
+                                                                                    }
+                                                                                />
+                                                                            </ActionIcon>
+                                                                        </Box>
+                                                                    )
+                                                                )}
+                                                                <Dropzone
+                                                                    onDrop={(
+                                                                        files
+                                                                    ) =>
+                                                                        handleVariantImagesChange(
+                                                                            files,
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                    accept={
+                                                                        IMAGE_MIME_TYPE
+                                                                    }
+                                                                    multiple
+                                                                    style={{
+                                                                        width: 80,
+                                                                        height: 80,
+                                                                        display:
+                                                                            "flex",
+                                                                        alignItems:
+                                                                            "center",
+                                                                        justifyContent:
+                                                                            "center",
+                                                                        borderStyle:
+                                                                            "dashed",
+                                                                    }}
+                                                                >
+                                                                    <IconPhoto
+                                                                        size={
+                                                                            24
+                                                                        }
+                                                                        c={
+                                                                            theme
+                                                                                .colors
+                                                                                .gray[5]
+                                                                        }
+                                                                    />
+                                                                </Dropzone>
+                                                            </Group>
+                                                        </Box>
+                                                    </Stack>
+                                                </Paper>
+                                            </motion.div>
+                                        )
+                                    )}
                                 </Stack>
                             </motion.div>
 
-                            {/* Status & Submit */}
                             <motion.div variants={itemVariants}>
                                 <Divider />
-                                <Group position="apart">
+                                <Group justify="space-between">
                                     <Controller
                                         name="status"
                                         control={control}

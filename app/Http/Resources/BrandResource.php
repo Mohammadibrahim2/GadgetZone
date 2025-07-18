@@ -19,7 +19,7 @@ class BrandResource extends JsonResource
             'name' => $this->name,
             'status' => $this->status,
             'created_at' => date('d M Y', strtotime($this->created_at)),
-            'logo' => asset('storage/' . $this->logo)
+            'logo' => asset('storage/' . $this->logo),
 
         ];
     }

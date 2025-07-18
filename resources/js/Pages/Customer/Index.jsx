@@ -8,6 +8,7 @@ import ButtonWithIcon from "@/Components/button/ButtonWithIcon";
 import { useState } from "react";
 import CategoryTable from "./Table";
 import { router, usePage } from "@inertiajs/react";
+import CustomerTable from "./Table";
 
 const CategoryIndex = () => {
     const [opened, { open, close }] = useDisclosure(false);
@@ -50,7 +51,7 @@ const CategoryIndex = () => {
                 />
             </div>
 
-            <CategoryTable />
+            <CustomerTable customers={customers} />
         </Box>
     );
 };

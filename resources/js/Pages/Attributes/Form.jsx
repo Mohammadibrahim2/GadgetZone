@@ -75,7 +75,7 @@ const AttributeForm = () => {
 
     const handleSlugChange = (e) => {
         setValue("slug", e.target.value.toLowerCase());
-        setUserEditedSlug(true); // Mark that user has manually edited the slug
+        setUserEditedSlug(true);
     };
 
     const onSubmit = (data) => {

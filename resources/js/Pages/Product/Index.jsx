@@ -1,48 +1,58 @@
 import MainLayout from "@/Layouts/MainLayout";
 import ProductTable from "./Table";
 import ButtonWithIcon from "@/Components/button/ButtonWithIcon";
-import { Box, Title } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Box, Button, Flex, Text, Title } from "@mantine/core";
+import { IconFilter, IconPlus, IconSearch } from "@tabler/icons-react";
 import Modal from "@/Components/Modal";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
+import TextInput from "@/Components/TextInput";
+import { useState } from "react";
 
 const Index = () => {
+    const { products } = usePage().props;
+    console.log(products.data);
+    const [searchQuery, setSearchQuery] = useState("");
     const handleSubmit = () => {
         router.get(route("products.create"));
     };
     return (
         <Box className="w-full p-4">
-            {/* Header section with proper alignment */}
-
-            <div className="flex justify-between mb-8 px-4">
+            <Flex justify="space-between" align="center" mb="md">
                 <div>
-                    <Title order={2} className="text-xl">
-                        {" "}
-                        Product
-                    </Title>
-                    <Title order={6} color="dimmed" mt={4}>
-                        Manage your Products
-                    </Title>
+                    <Text size="xl" weight={600}>
+                        Product List
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                        Manage your products
+                    </Text>
                 </div>
-                <ButtonWithIcon
-                    title="Add Product"
-                    iconLeft={<IconPlus size={16} />}
-                    variant="brand"
-                    onClick={handleSubmit}
-                    className="mr-6"
-                />
-            </div>
+                <Button variant="filled" color="orange" onClick={handleSubmit}>
+                    <IconPlus size={16} /> Add Product
+                </Button>
+            </Flex>
 
-            {/* <Modal
-                opened={opened}
-                onClose={() => setOpened(false)}
-                title="Authentication"
-                centered
-                zIndex={10000}
-            >
-                <h1>dhjhbahbhjabkjbf</h1>
-            </Modal> */}
-            {/* //  <ProductTable /> */}
+            {/* Search and Filter Section */}
+            <Flex gap="md" mb="md">
+                <TextInput
+                    placeholder="Search products..."
+                    icon={<IconSearch size={16} />}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                    sx={{ flex: 1 }}
+                />
+                <Button leftIcon={<IconFilter size={16} />} variant="outline">
+                    Filters
+                </Button>
+            </Flex>
+            {/* 
+            <ButtonWithIcon
+                title="Add Product"
+                iconLeft={<IconPlus size={16} />}
+                variant="brand"
+                className="mr-6"
+            /> */}
+
+            <ProductTable products={products} searchQuery={searchQuery} />
         </Box>
     );
 };

@@ -18,7 +18,7 @@ class AttributeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'values' => $this->values,
+            'values' => AttributeValueResource::collection($this->whenLoaded('values')),
             'created_at' => date('d M Y', strtotime($this->created_at)),
             'status' => $this->status
         ];

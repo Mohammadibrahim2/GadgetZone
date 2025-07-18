@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GlobalEnums;
+use App\Http\Resources\ProductResource;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Brand;
@@ -23,12 +24,14 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Product/Index');
+        $products = Product::with('category:id,title', 'brand:id,name,logo', 'attributes.values', 'variants.images', 'variants.attributeValues', 'variants.color:id,name,hex_code')
+            ->orderBy('id', 'desc')->get();
+        return Inertia::render('Product/Index', ['products' => ProductResource::collection($products)]);
+
+        //  return ProductResource::collection($products);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
         $categories = Category::select('id', 'title')->where('status', GlobalEnums::PUBLISHED->value)->get();
@@ -42,7 +45,9 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        DB::beginTransaction();
+
+
+        // DB::beginTransaction();
 
         try {
 
@@ -65,6 +70,7 @@ class ProductController extends Controller
 
                 $featuredImagePath = null;
             }
+
 
             $product = Product::create([
                 'title'         => $request->title,
@@ -90,7 +96,6 @@ class ProductController extends Controller
                 }
             }
 
-
             foreach ($syncData as $data) {
                 $product->attributes()->attach($data['attribute_id'], [
                     'attribute_value_id' => $data['attribute_value_id'],
@@ -107,6 +112,7 @@ class ProductController extends Controller
 
                 ]);
 
+
                 // ✅ Sync variant_attribute_pivot
                 $variantSyncData = [];
 
@@ -115,6 +121,7 @@ class ProductController extends Controller
                         $variantSyncData[$attributeId] = ['attribute_value_id' => $valueId];
                     }
                 }
+
 
                 $variant->attributeValues()->sync($variantSyncData);
 
@@ -127,18 +134,19 @@ class ProductController extends Controller
                             $imagePath = $imageFile->storeAs('products/variants', $filename, 'public');
 
                             $variant->images()->create([
-                                'path' => $imagePath,
+                                'image_path' => $imagePath,
                                 'variant_id' => $variant->id
                             ]);
                         }
                     }
                 }
             }
-            DB::commit();
+
+            // DB::commit();
             return redirect()->route('products.index')->with('success', 'Product created successfully!');
         } catch (\Exception $e) {
             Log::error(['error' => $e->getMessage()]);
-            DB::rollBack();
+            // DB::rollBack();
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
@@ -150,17 +158,23 @@ class ProductController extends Controller
 
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        //
+        $product = Product::with('category:id,title', 'brand:id,name', 'attributes.values', 'variants.images', 'variants.attributeValues', 'variants.color:id,name,hex_code')
+            ->findOrFail($id);
+        //  return new ProductResource($product);
+        return Inertia::render('Product/ProductPage', ['product' => new ProductResource($product)]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        //
+        $product = Product::with('category:id,title', 'brand:id,name', 'attributes.values', 'variants.images', 'variants.attributeValues', 'variants.color:id,name,hex_code')
+            ->findOrFail($id);
+        //  return $product;
+        return Inertia::render('Product/Form', ['product' => new ProductResource($product)]);
     }
 
     /**
@@ -177,6 +191,13 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+    }
+
+    public function shopProducts()
+    {
+        $shopProducts = Product::with('category:id,title', 'brand:id,name,logo', 'attributes.values', 'variants.images', 'variants.attributeValues', 'variants.color:id,name,hex_code')
+            ->orderBy('id', 'desc')->get();
+        return Inertia::render('Product/ProductShopping/ShopingPage', ['shopProducts' => ProductResource::collection($shopProducts)]);
     }
 }
 

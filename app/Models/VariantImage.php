@@ -10,10 +10,10 @@ class VariantImage extends Model
     use HasFactory;
     protected $table = 'variant_images';
 
-    protected $fillable = ['variant_id', 'path'];
+    protected $fillable = ['variant_id', 'image_path'];
 
     public function variant()
     {
-        return $this->belongsTo(Variant::class);
+        return $this->belongsTo(Variant::class, 'variant_id');
     }
 }

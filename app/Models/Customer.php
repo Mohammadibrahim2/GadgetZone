@@ -12,14 +12,17 @@ class Customer extends Model
     use HasFactory, HasRoles;
 
     protected $fillable = [
-        'id',
+        'name',
+        'phone',
+        'email',
         'user_id',
         'name',
         'phone',
-        'postal_code',
+        'zip_code',
         'address',
+        'district',
         'city',
-        'country',
+        'area',
         'customer_code',
         'status'
 
@@ -28,5 +31,10 @@ class Customer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

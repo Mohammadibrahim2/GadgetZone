@@ -20,11 +20,11 @@ import { router } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 import MainLayout from "@/Layouts/MainLayout";
 
-const CustomerTable = ({ users }) => {
+const CustomerTable = ({ customers }) => {
     const theme = useMantineTheme();
     const [searchQuery, setSearchQuery] = useState("");
 
-    console.log(users, "categories");
+    console.log(customers, "customers");
     // const filteredData = subCategories.filter(
     //     (item) =>
     //         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -34,7 +34,7 @@ const CustomerTable = ({ users }) => {
 
     const handleEdit = (id) => {
         console.log(id);
-        const response = router.get(route("categories.edit", id), {
+        const response = router.get(route("customers.edit", id), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
@@ -47,7 +47,7 @@ const CustomerTable = ({ users }) => {
         });
     };
     const handleDelete = (id) => {
-        router.delete(route("categories.delete", id), {
+        router.delete(route("customers.delete", id), {
             onSuccess: () => {
                 notifications.show({
                     title: "Success!",
@@ -75,7 +75,7 @@ const CustomerTable = ({ users }) => {
                             variant="outline"
                             rightIcon={<IconChevronDown size={16} />}
                         >
-                            Category
+                            customers
                         </Button>
                         <Button
                             variant="outline"
@@ -127,7 +127,7 @@ const CustomerTable = ({ users }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users?.data?.map((item) => (
+                            {customers?.data?.map((item) => (
                                 <tr
                                     key={item.id}
                                     style={{
@@ -151,13 +151,13 @@ const CustomerTable = ({ users }) => {
                                             fontWeight: 500,
                                         }}
                                     >
-                                        {item?.title}
+                                        {item?.name}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item?.description}
+                                        {item?.email}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
-                                        {item?.slug}
+                                        {item?.phone}
                                     </td>
                                     <td style={{ padding: "12px 24px" }}>
                                         {item?.created_at}

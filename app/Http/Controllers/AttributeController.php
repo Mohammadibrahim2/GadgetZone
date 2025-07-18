@@ -92,25 +92,34 @@ class AttributeController extends Controller
      */
     public function update(AttributeRequest $request, $id)
     {
-        try {
-            $attribute = Attribute::findOrFail($id);
 
-            $validated = $request->validated();
+        $attribute = Attribute::findOrFail($id);
+        $attribute->update([
+            'name'   => $request->validated('name'),
+            'slug'   => $request->validated('slug'),
+            'status' => $request->validated('status') ?? GlobalEnums::DARFT->value,
+        ]);
 
-            $isUpdated = $attribute->update($validated);
 
-            if ($isUpdated) {
-                return redirect()->route('attributes.index')
-                    ->with('success', 'Attribute updated successfully');
-            }
-
-            return back()->with('error', 'Failed to update attribute');
-        } catch (\Exception $e) {
-            Log::error('Attribute update failed: ' . $e->getMessage());
-
-            return back()->with('error', 'An error occurred while updating the attribute')
-                ->withInput();
+        // 2️⃣ Purge old values (or use smarter diff logic)
+        $attribute->values()->delete();
+        //re-insert values
+        foreach ($request->validated('values') as $value) {
+            // AttributeValue::create(['value' => $value,'attribute_id'=>$attribute->id]);// old version
+            $attribute->values()->create(['value' => $value]); //new version atomatically add attribute_id
         }
+
+
+        if ($attribute) {
+            return redirect()->route('attributes.index')
+                ->with('success', 'Attribute updated successfully');
+        }
+        // } catch (\Exception $e) {
+        // Log::error('Attribute update failed: ' . $e->getMessage());
+
+        // return back()->with('error', 'An error occurred while updating the attribute')
+        //     ->withInput();
+        // }
     }
 
     /**

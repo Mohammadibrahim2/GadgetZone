@@ -16,11 +16,13 @@ class CustomerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'phone' => $this->phone,
-            'country' => $this->country,
-            'status' => $this->slug,
-            'created_at' => date('d M Y', strtotime($this->created_at)),
-            'status' => $this->status
+            'name' => $this?->name,
+            'email' => $this?->email,
+            'phone' => $this?->phone,
+            'country' => $this?->adress,
+            'status' => $this?->slug,
+            'created_at' => date('d M Y', strtotime($this?->created_at)),
+            'status' => $this?->status
         ];
     }
 }

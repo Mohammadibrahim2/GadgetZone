@@ -1,197 +1,169 @@
-import MainLayout from "@/Layouts/MainLayout";
+import { router } from "@inertiajs/react";
 import {
     Table,
+    Image,
     Badge,
-    ActionIcon,
     Group,
     Text,
-    Menu,
-    Pagination,
+    ActionIcon,
+    Flex,
     Box,
+    Select,
+    Pagination,
 } from "@mantine/core";
-import {
-    IconEdit,
-    IconTrash,
-    IconDots,
-    IconEye,
-    IconArrowsSort,
-} from "@tabler/icons-react";
+import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 
-const ProductTable = ({ products, onEdit, onDelete, onView }) => {
-    const [sortBy, setSortBy] = useState(null);
-    const [reverseSort, setReverseSort] = useState(false);
-    const [page, setPage] = useState(1);
-    const itemsPerPage = 8;
+export default function ProductsTable({
+    products,
 
-    // Sort products
-    const sortedProducts = [...products].sort((a, b) => {
-        if (!sortBy) return 0;
+    handleDelete,
+    searchQuery,
+}) {
+    const [sortedData, setSortedData] = useState(products.data);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
 
-        if (a[sortBy] < b[sortBy]) return reverseSort ? 1 : -1;
-        if (a[sortBy] > b[sortBy]) return reverseSort ? -1 : 1;
-        return 0;
-    });
-
-    // Paginate products
-    const paginatedProducts = sortedProducts.slice(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage
+    // Filter products based on search query
+    const filteredProducts = sortedData.filter(
+        (product) =>
+            product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.sku.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleSort = (column) => {
-        if (sortBy === column) {
-            setReverseSort(!reverseSort);
-        } else {
-            setSortBy(column);
-            setReverseSort(false);
-        }
+    // Pagination logic
+    const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
+    const paginatedProducts = filteredProducts.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+    const handleEdit = (id) => {
+        console.log(id);
+        router.get(route("products.edit", id));
     };
-
-    const StatusBadge = ({ status }) => {
-        const color =
-            {
-                published: "green",
-                draft: "yellow",
-                archived: "red",
-            }[status] || "gray";
-
-        return (
-            <Badge color={color} variant="light" radius="sm">
-                {status}
-            </Badge>
-        );
+    const handleView = (id) => {
+        console.log(id);
+        router.get(route("products.show", id));
     };
-
     return (
-        <Box className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-            <Table striped highlightOnHover className="min-w-full">
-                <thead className="bg-gray-50">
+        <Box
+            sx={{ backgroundColor: "white", borderRadius: "md", padding: "md" }}
+        >
+            {/* Products Table */}
+            <Table
+                striped
+                highlightOnHover
+                sx={{
+                    "& tbody tr td": {
+                        borderBottom: "1px solid #e9ecef",
+                        textAlign: "center",
+                        verticalAlign: "middle",
+                    },
+                    "& thead tr th": {
+                        textAlign: "center",
+                        fontWeight: 600,
+                    },
+                }}
+            >
+                <thead>
                     <tr>
-                        <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => handleSort("name")}
-                        >
-                            <Group spacing="xs">
-                                Product
-                                <IconArrowsSort size={14} />
-                            </Group>
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Category
-                        </th>
-                        <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => handleSort("price")}
-                        >
-                            <Group spacing="xs">
-                                Price
-                                <IconArrowsSort size={14} />
-                            </Group>
-                        </th>
-                        <th
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => handleSort("stock")}
-                        >
-                            <Group spacing="xs">
-                                Stock
-                                <IconArrowsSort size={14} />
-                            </Group>
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                        </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                        </th>
+                        <th>SKU</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Brand</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody>
                     {paginatedProducts.map((product) => (
-                        <tr
-                            key={product.id}
-                            className="hover:bg-gray-50 transition-colors"
-                        >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <Group spacing="sm">
-                                    <div className="flex-shrink-0 h-10 w-10">
-                                        <img
-                                            className="h-10 w-10 rounded-md object-cover"
-                                            src={
-                                                product.image ||
-                                                "/placeholder-product.jpg"
-                                            }
-                                            alt={product.name}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Text className="text-sm font-medium text-gray-900">
-                                            {product.name}
-                                        </Text>
-                                        <Text className="text-sm text-gray-500">
-                                            SKU: {product.sku}
-                                        </Text>
-                                    </div>
+                        <tr key={product.id}>
+                            <td>
+                                <Text weight={500}>{product.sku}</Text>
+                            </td>
+                            <td>
+                                <Group spacing="sm" position="center">
+                                    <Image
+                                        src={product.featured_image}
+                                        h={70}
+                                        w="auto"
+                                        radius="sm"
+                                        alt={product.title}
+                                        withPlaceholder
+                                    />
+                                    <Text weight={500}>{product.title}</Text>
                                 </Group>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <Text className="text-sm text-gray-900">
-                                    {product.category?.name || "N/A"}
+                            <td>
+                                <Badge color="blue" variant="light">
+                                    {product.category?.title || "N/A"}
+                                </Badge>
+                            </td>
+                            <td>
+                                {product.brand && (
+                                    <Text size="sm">{product.brand.name}</Text>
+                                )}
+                            </td>
+                            <td>
+                                <Text weight={600}>
+                                    ${product.variants[0]?.price || "N/A"}
                                 </Text>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <Text className="text-sm text-gray-900 font-medium">
-                                    ${product.price.toFixed(2)}
-                                </Text>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <Text
-                                    className={`text-sm font-medium ${
-                                        product.stock < 10
-                                            ? "text-red-600"
-                                            : "text-gray-900"
-                                    }`}
+                            <td>
+                                <Badge
+                                    color={
+                                        product.variants[0]?.stock > 0
+                                            ? "green"
+                                            : "red"
+                                    }
+                                    variant="light"
                                 >
-                                    {product.stock} in stock
+                                    {product.variants[0]?.stock || 0}
+                                </Badge>
+                            </td>
+                            <td>
+                                <Badge
+                                    color={
+                                        product.status === "published"
+                                            ? "green"
+                                            : product.status === "draft"
+                                            ? "orange"
+                                            : "gray"
+                                    }
+                                    variant="light"
+                                >
+                                    {product.status}
+                                </Badge>
+                            </td>
+                            <td>
+                                <Text size="sm">
+                                    {product.created_by || "System"}
                                 </Text>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <StatusBadge status={product.status} />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <Group spacing={4} position="right">
+                            <td>
+                                <Group spacing={4} position="center">
                                     <ActionIcon
-                                        color="blue"
-                                        variant="light"
-                                        onClick={() => onView(product.id)}
+                                        color="orange"
+                                        onClick={() => handleView(product.id)}
                                     >
                                         <IconEye size={16} />
                                     </ActionIcon>
                                     <ActionIcon
-                                        color="orange"
-                                        variant="light"
-                                        onClick={() => onEdit(product.id)}
+                                        color="green"
+                                        onClick={() => handleEdit(product.id)}
                                     >
                                         <IconEdit size={16} />
                                     </ActionIcon>
-                                    <Menu position="bottom-end" withinPortal>
-                                        <Menu.Target>
-                                            <ActionIcon variant="light">
-                                                <IconDots size={16} />
-                                            </ActionIcon>
-                                        </Menu.Target>
-                                        <Menu.Dropdown>
-                                            <Menu.Item
-                                                icon={<IconTrash size={14} />}
-                                                color="red"
-                                                onClick={() =>
-                                                    onDelete(product.id)
-                                                }
-                                            >
-                                                Delete
-                                            </Menu.Item>
-                                        </Menu.Dropdown>
-                                    </Menu>
+                                    <ActionIcon
+                                        color="red"
+                                        onClick={() => handleDelete(product.id)}
+                                    >
+                                        <IconTrash size={16} />
+                                    </ActionIcon>
                                 </Group>
                             </td>
                         </tr>
@@ -199,22 +171,33 @@ const ProductTable = ({ products, onEdit, onDelete, onView }) => {
                 </tbody>
             </Table>
 
-            {products.length > itemsPerPage && (
-                <div className="px-6 py-4 border-t border-gray-200">
+            {/* Pagination Section */}
+            <Flex justify="space-between" align="center" mt="md">
+                <Text size="sm" color="dimmed">
+                    Showing {paginatedProducts.length} of{" "}
+                    {filteredProducts.length} products
+                </Text>
+
+                <Flex align="center" gap="md">
+                    <Group spacing="xs">
+                        <Text size="sm">Rows per page</Text>
+                        <Select
+                            value={rowsPerPage.toString()}
+                            onChange={(value) =>
+                                setRowsPerPage(parseInt(value))
+                            }
+                            data={["5", "10", "20", "50"]}
+                            style={{ width: 80 }}
+                        />
+                    </Group>
                     <Pagination
-                        total={Math.ceil(products.length / itemsPerPage)}
-                        page={page}
-                        onChange={setPage}
-                        position="right"
-                        className="justify-end"
+                        value={currentPage}
+                        onChange={setCurrentPage}
+                        total={totalPages}
+                        size="sm"
                     />
-                </div>
-            )}
+                </Flex>
+            </Flex>
         </Box>
     );
-};
-ProductTable.layout = (page) => (
-    <MainLayout title="Products">{page}</MainLayout>
-);
-
-export default ProductTable;
+}

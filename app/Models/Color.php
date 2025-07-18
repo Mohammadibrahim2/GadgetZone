@@ -11,4 +11,9 @@ class Color extends Model
         'hex_code',
         'status'
     ];
+
+    public function variants()
+    {
+        return $this->hasMany(Variant::class);
+    }
 }

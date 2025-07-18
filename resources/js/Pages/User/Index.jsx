@@ -5,6 +5,7 @@ import MainLayout from "@/Layouts/MainLayout";
 import { notifications } from "@mantine/notifications";
 import { router, usePage } from "@inertiajs/react";
 import { Indicator } from "@mantine/core";
+import GuestLayout from "@/Layouts/GuestLayout";
 
 const Profile = () => {
     const { auth } = usePage().props;
@@ -277,9 +278,9 @@ const Profile = () => {
 };
 
 Profile.layout = (page) => (
-    <MainLayout title="Profile">
+    <GuestLayout title="Profile">
         <div className="p-4">{page}</div>
-    </MainLayout>
+    </GuestLayout>
 );
 
 export default Profile;

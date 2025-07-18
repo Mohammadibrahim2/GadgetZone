@@ -3,9 +3,11 @@ import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import MainLayoutNavbar from "./Components/MainLayoutNavbar";
 import MainTopNavbar from "./Components/MainLayoutTopbar";
+import { usePage } from "@inertiajs/react";
 
 function MainLayout({ children }) {
     const [opened, { toggle }] = useDisclosure();
+    const { auth } = usePage().props;
 
     return (
         <AppShell
@@ -21,19 +23,22 @@ function MainLayout({ children }) {
             }}
         >
             {/* Top Navbar */}
+
             <AppShell.Header className="shadow-sm bg-white border-b border-gray-200 z-10">
                 <MainTopNavbar />
             </AppShell.Header>
 
             {/* Sidebar + Content Layout */}
-            <div className="flex h-[calc(100vh-60px)]">
-                <AppShell.Navbar className="bg-white border-r border-gray-200 overflow-y-auto">
-                    <MainLayoutNavbar />
-                </AppShell.Navbar>
 
+            <div className="flex h-[calc(100vh-60px)]">
+                {auth.user && (
+                    <AppShell.Navbar className="bg-white  border-gray-200 overflow-y-auto">
+                        <MainLayoutNavbar />
+                    </AppShell.Navbar>
+                )}
                 {/* Main Content */}
-                <AppShell.Main className="p-4 flex-1 min-w-0">
-                    <div className="h-full w-full overflow-y-auto bg-white rounded-lg shadow-sm p-4">
+                <AppShell.Main className=" flex-1 min-w-0">
+                    <div className="h-full w-full overflow-y-auto bg-white shadow-sm ">
                         {children}
                     </div>
                 </AppShell.Main>
