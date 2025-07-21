@@ -189,7 +189,8 @@ class OrderController extends Controller
 
     public function viewOrder($orderId)
     {
-        $order = Order::with('customer:id,name,email,phone', 'tracking:order_tracking_code,id')->findOrFail($orderId);
+
+        $order = Order::with(['customer:id,name,email,phone', 'tracking:order_tracking_code,id,order_id'])->findOrFail($orderId);
 
         return Inertia::render('Order/CompletedOrders/ViewOrder', ['order' => new OrderResource($order)]);
     }

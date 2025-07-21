@@ -9,7 +9,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class SendOrderConfirmationMail
+class SendOrderConfirmationMail implements ShouldQueue
 {
     use Queueable;
     /**
@@ -25,6 +25,6 @@ class SendOrderConfirmationMail
         $order = $event->order;
         $customer = $order->customer;
 
-        Mail::to($customer->email)->queue(new OrderConfirmationMail($event->order));
+        Mail::to($customer->email)->send(new OrderConfirmationMail($event->order));
     }
 }

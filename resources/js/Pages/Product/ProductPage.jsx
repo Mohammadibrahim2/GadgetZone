@@ -3,7 +3,6 @@ import { usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { ProductDetails } from "./ProductDetails";
 import { ProductImages } from "./ProductImageCarousel";
-import MainLayout from "@/Layouts/MainLayout";
 import { ProductServiceInfo } from "./ProductServiceInfo";
 import GuestLayout from "@/Layouts/GuestLayout";
 
@@ -17,6 +16,7 @@ const ProductPage = () => {
     const [activeImage, setActiveImage] = useState(
         product.data.variants[0]?.images[0]?.path
     );
+
     // Extract unique colors from variants
     const colors = [
         ...new Map(
@@ -52,7 +52,8 @@ const ProductPage = () => {
     return (
         <Container size="lg" py="xl">
             <Grid gutter="xl">
-                <Grid.Col span={4} md={6}>
+                {/* Product Images - 5 cols on desktop, 12 on mobile */}
+                <Grid.Col span={{ base: 12, md: 5 }}>
                     <ProductImages
                         images={allImages}
                         colors={colors}
@@ -63,7 +64,8 @@ const ProductPage = () => {
                     />
                 </Grid.Col>
 
-                <Grid.Col span={4} md={6}>
+                {/* Product Details - 4 cols on desktop, 12 on mobile */}
+                <Grid.Col span={{ base: 12, md: 4 }}>
                     <ProductDetails
                         product={product.data}
                         selectedVariant={selectedVariant}
@@ -72,7 +74,9 @@ const ProductPage = () => {
                         activeImage={activeImage}
                     />
                 </Grid.Col>
-                <Grid.Col span={4} md={6}>
+
+                {/* Service Info - 3 cols on desktop, 12 on mobile */}
+                <Grid.Col span={{ base: 12, md: 3 }}>
                     <ProductServiceInfo />
                 </Grid.Col>
             </Grid>
@@ -83,4 +87,5 @@ const ProductPage = () => {
 ProductPage.layout = (page) => (
     <GuestLayout title="Product">{page}</GuestLayout>
 );
+
 export default ProductPage;

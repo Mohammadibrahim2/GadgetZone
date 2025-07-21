@@ -18,11 +18,6 @@ import GuestLayout from "@/Layouts/GuestLayout";
 const ViewOrder = () => {
     const { order } = usePage().props;
 
-    // order = {
-    //   customer_id, payment_method, transaction_id, payment_status,
-    //   order_status, total_amount, discount, shipping_cost, note
-    // }
-
     const handleBack = () => {
         router.get(route("home"));
     };
@@ -36,7 +31,7 @@ const ViewOrder = () => {
             case "unpaid":
                 return "red";
             default:
-                return "gray";
+                return "blue";
         }
     };
     const handleMyOrder = (id) => {
@@ -61,7 +56,15 @@ const ViewOrder = () => {
                     <Text weight={600}>Customer :</Text>
                     <Text>{order?.data.customers.name}</Text>
                 </Group>
+                <Group position="apart">
+                    <Text weight={600}>Phone :</Text>
+                    <Text>{order?.data.customers.phone}</Text>
+                </Group>
 
+                <Group position="apart">
+                    <Text weight={600}>Order ID:</Text>
+                    <Text>{order.data.orders_tracking_info.code}</Text>
+                </Group>
                 <Group position="apart">
                     <Text weight={600}>Payment Method:</Text>
                     <Text>{order.data.payment_method}</Text>
@@ -84,19 +87,22 @@ const ViewOrder = () => {
 
                 <Group position="apart">
                     <Text weight={600}>Order Status:</Text>
-                    {/* <Badge
+                    <Badge
                         color={getStatusColor(order.data.order_status)}
                         variant="filled"
                     >
                         {order.data.order_status}
-                    </Badge> */}
+                    </Badge>
                 </Group>
 
                 <Divider />
-
                 <Group position="apart">
-                    <Text weight={600}>Total Amount:</Text>
-                    <Text>{order.data.total_amount} ৳</Text>
+                    <Text weight={600}>Shipping Cost:</Text>
+                    <Text>
+                        {order.data.shipping_cost
+                            ? `${order.data.shipping_cost} ৳`
+                            : "0 ৳"}
+                    </Text>
                 </Group>
 
                 <Group position="apart">
@@ -109,12 +115,8 @@ const ViewOrder = () => {
                 </Group>
 
                 <Group position="apart">
-                    <Text weight={600}>Shipping Cost:</Text>
-                    <Text>
-                        {order.data.shipping_cost
-                            ? `${order.data.shipping_cost} ৳`
-                            : "0 ৳"}
-                    </Text>
+                    <Text weight={600}>Total Amount:</Text>
+                    <Text>{order.data.total_amount} ৳</Text>
                 </Group>
 
                 <Divider />

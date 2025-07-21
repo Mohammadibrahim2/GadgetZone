@@ -26,6 +26,8 @@ import { route } from "ziggy-js";
 import { useState } from "react";
 import { useCart } from "@/hooks/Cart/CartContext";
 import CartMenu from "@/Components/cart/cart-menu";
+import Logo from "@/Components/Logo/logo";
+import { useSearch } from "@/hooks/Search/SearchContext";
 
 function MainTopNavbar() {
     const { auth } = usePage().props;
@@ -34,12 +36,13 @@ function MainTopNavbar() {
     const [profileOpen, setProfileOpen] = useState(false);
     const { cart, removeItem, clearCart } = useCart();
 
-    const hotels = [
-        "GrandVista Hotel",
-        "OceanView Hotel",
-        "CityNest Inn",
-        "Mountain Retreat Lodge",
-    ];
+    const { search, setSearch } = useSearch();
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        router.visit("/filteredProdcts");
+    };
 
     const notifications = [
         { id: 1, text: "New order received", time: "2 min ago", read: false },
@@ -59,16 +62,14 @@ function MainTopNavbar() {
                 <div className="flex items-center">
                     <div className="flex items-center">
                         <Link href={route("home")}>
-                            <span className="ml-2 text-xl font-bold text-white hidden md:inline">
-                                Gadget<span className="text-white">Zone</span>
-                            </span>
+                            <Logo />
                         </Link>
                     </div>
                 </div>
                 {/* Right side - Navigation elements */}
                 <div className="flex items-center space-x-4">
                     {/* Shop Selector */}
-                    <div className="relative">
+                    {/* <div className="relative">
                         <select
                             value={currentShop}
                             onChange={(e) => setCurrentShop(e.target.value)}
@@ -83,29 +84,36 @@ function MainTopNavbar() {
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
                             <IconChevronDown className="h-4 w-4" />
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Search Bar (hidden on mobile) */}
                     <div className="hidden md:block relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <IconSearch className="h-5 w-5 text-white" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            className="pl-10 pr-4 py-2 w-64 text-sm text-gray-700 bg-white rounded-lg border border-orange-300 focus:ring-2 focus:ring-white focus:border-white"
-                        />
+                        <form onSubmit={handleSearch} className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="rounded-md pl-2 pr-4 py-2 w-64 text-sm text-gray-700 bg-white  border border-orange-300 focus:ring-2 focus:ring-white focus:border-white"
+                            />
+                            <button
+                                type="submit"
+                                className="absolute inset-y-0 right-0 pr-2 flex items-center"
+                            >
+                                <IconSearch className="h-5 w-5 text-orange-500" />
+                            </button>
+                        </form>
                     </div>
 
                     {/* Icons */}
                     <div className="flex items-center space-x-3">
                         {/* Messages - Only show if logged in */}
-                        {auth.user && (
+                        {/* {auth.user && (
                             <button className="p-2 rounded-full text-white hover:bg-orange-400 relative">
                                 <IconMessage className="h-5 w-5" />
                                 <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-white"></span>
                             </button>
-                        )}
+                        )} */}
 
                         {/* Notifications - Only show if logged in */}
                         {auth.user && (

@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProducFilterController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -24,7 +25,10 @@ Route::get('/viewOrder/{orderId}', [OrderController::class, 'viewOrder'])->name(
 Route::get('/myOrder/{orderId}', [OrderController::class, 'myOrder'])->name('orders.myOrder');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::get('/create', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::get('/filter', [ProducFilterController::class, 'index'])->name('filter.index');
+Route::get('/filteredProdcts', [ProducFilterController::class, 'getProducts'])->name('filter.productList');
 
+Route::get('/personal', [ProducFilterController::class, 'pregnancyChecker'])->name('pregnancyChecker');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

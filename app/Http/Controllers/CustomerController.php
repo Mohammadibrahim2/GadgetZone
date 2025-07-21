@@ -18,12 +18,12 @@ class CustomerController extends Controller
     public function __construct(protected CustomerService $customerService) {}
     public function index()
     {
-        $customers = Customer::with('user:id,user_id,name,email')
-            ->select('id', 'country', 'phone', 'created_at', 'status', 'customer_code')->get();
+        $customers = Customer::with(['user:id,name,email'])
+            ->select('id', 'address', 'phone', 'created_at', 'status', 'name', 'email')->get();
+        //  return $customers;
 
 
-        return $customers;
-        // return Inertia::render('Customer/Index', ['customers' => CustomerResource::collection($customers)]);
+        return Inertia::render('Customer/Index', ['customers' => CustomerResource::collection($customers)]);
     }
 
     public function create()

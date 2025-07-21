@@ -1,8 +1,8 @@
-import { Image, Group, Text, rem } from "@mantine/core";
+import { Image, Group, Text, Button, ScrollArea } from "@mantine/core";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import "@mantine/carousel/styles.css";
 import { Carousel } from "@mantine/carousel";
+import "@mantine/carousel/styles.css";
+import { useState } from "react";
 
 export function ProductImages({
     images,
@@ -12,125 +12,180 @@ export function ProductImages({
     activeImage,
     setActiveImage,
 }) {
-    const [filteredImages, setFilteredImages] = useState(images);
-    const [thumbnailCarousel, setThumbnailCarousel] = useState(null);
+    const [showAll, setShowAll] = useState(false);
+    const displayImages = showAll
+        ? images
+        : selectedColor
+        ? images.filter((img) => img.color_id === selectedColor)
+        : images;
 
-    // Filter images when color changes
-    useEffect(() => {
-        if (selectedColor) {
-            const filtered = images.filter(
-                (img) => img.color_id === selectedColor
-            );
-            setFilteredImages(filtered);
-            if (!filtered.some((img) => img.path === activeImage)) {
-                setActiveImage(filtered[0]?.path);
-            }
-        } else {
-            setFilteredImages(images);
-            if (!images.some((img) => img.path === activeImage)) {
-                setActiveImage(images[0]?.path);
-            }
-        }
-    }, [selectedColor, images]);
-    // Handle thumbnail click
-    const handleThumbnailClick = (imgPath, index) => {
-        setActiveImage(imgPath);
-        if (thumbnailCarousel) {
-            thumbnailCarousel.scrollTo(index);
-        }
+    // Ensure carousel can scroll to last image
+    const carouselStyles = {
+        display: "flex",
+        overflowX: "auto",
+        scrollSnapType: "x mandatory",
+        gap: "0.5rem",
+        paddingBottom: "0.5rem",
+        "&::-webkit-scrollbar": {
+            height: "4px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#e2e8f0",
+            borderRadius: "2px",
+        },
     };
 
     return (
-        <div style={{ width: "100%" }}>
-            {/* Main Image Display (No Carousel) */}
-            <div
-                style={{
-                    borderRadius: "var(--mantine-radius-md)",
-                    overflow: "hidden",
-                    boxShadow: "var(--mantine-shadow-sm)",
-                    aspectRatio: "1/1",
-                    backgroundColor: "var(--mantine-color-gray-1)",
-                    marginBottom: rem(16),
-                }}
-            >
-                <Image
-                    src={activeImage}
-                    fit="contain"
-                    // className="w-[200px] h-[300px]"
-                    width="70%"
-                    height="60%"
-                    alt="Product image"
-                    withPlaceholder
-                />
+        <div className="w-full">
+            {/* Desktop Layout */}
+            <div className="hidden md:flex gap-4 w-full">
+                {/* Left - Vertical Scrollable Carousel */}
+                <div className="w-[100px] h-[400px]">
+                    <ScrollArea style={{ height: "100%" }}>
+                        <div className="flex flex-col gap-2 pr-2">
+                            {displayImages.map((img) => (
+                                <motion.div
+                                    key={img.id}
+                                    whileHover={{ scale: 1.05 }}
+                                    className="flex-shrink-0"
+                                >
+                                    <Image
+                                        src={img.path}
+                                        onClick={() => setActiveImage(img.path)}
+                                        className={`w-20 h-20 rounded-sm cursor-pointer border-2 ${
+                                            activeImage === img.path
+                                                ? "border-orange-500"
+                                                : "border-gray-300"
+                                        }`}
+                                    />
+                                </motion.div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+
+                {/* Right - Active Image and Colors */}
+                <div className="flex-1">
+                    <div className="rounded-md overflow-hidden shadow-sm aspect-square bg-gray-100 mb-4 flex justify-center items-center">
+                        <Image
+                            src={activeImage}
+                            fit="contain"
+                            className="w-full h-full max-w-[500px] max-h-[500px] object-contain"
+                            withPlaceholder
+                        />
+                    </div>
+
+                    {colors.length > 0 && (
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <Text size="sm" fw={500}>
+                                    Available Colors
+                                </Text>
+                                <Button
+                                    variant="subtle"
+                                    size="xs"
+                                    onClick={() => setShowAll(!showAll)}
+                                    className="text-orange-500"
+                                >
+                                    {showAll ? "Show Filtered" : "Show All"}
+                                </Button>
+                            </div>
+                            <div className="flex flex-wrap gap-0">
+                                {colors.map((color) => (
+                                    <motion.div
+                                        key={color.id}
+                                        className={`w-10 h-10 cursor-pointer border-2 ${
+                                            selectedColor === color.id
+                                                ? "border-orange-500"
+                                                : "border-gray-200"
+                                        }`}
+                                        style={{ backgroundColor: color.hex }}
+                                        onClick={() => {
+                                            onColorChange(color.id);
+                                            setShowAll(false);
+                                        }}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {/* Thumbnail Navigation Carousel */}
-            <Carousel
-                withControls
-                slideSize="20%"
-                slideGap="md"
-                align="start"
-                height={rem(90)}
-                getEmblaApi={setThumbnailCarousel}
-                dragFree
-                style={{ marginBottom: rem(16) }}
-            >
-                {filteredImages.map((img, index) => (
-                    <Carousel.Slide key={img.id}>
-                        <motion.div whileHover={{ scale: 1.05 }}>
+            {/* Mobile Layout */}
+            <div className="block md:hidden">
+                {/* Top - Active Image */}
+                <div className="rounded-md overflow-hidden shadow-sm aspect-square bg-gray-100 mb-4 flex justify-center items-center">
+                    <Image
+                        src={activeImage}
+                        fit="contain"
+                        className="w-full h-full object-contain"
+                        withPlaceholder
+                    />
+                </div>
+
+                {/* Middle - Horizontal Scrollable Carousel */}
+                <div className="mb-4" style={carouselStyles}>
+                    {displayImages.map((img) => (
+                        <motion.div
+                            key={img.id}
+                            whileHover={{ scale: 1.05 }}
+                            className="flex-shrink-0"
+                            style={{ scrollSnapAlign: "start" }}
+                        >
                             <Image
                                 src={img.path}
-                                onClick={() =>
-                                    handleThumbnailClick(img.path, index)
-                                }
-                                style={{
-                                    width: rem(80),
-                                    height: rem(80),
-                                    borderRadius: "var(--mantine-radius-sm)",
-                                    cursor: "pointer",
-                                    border: `2px solid ${
-                                        activeImage === img.path
-                                            ? "var(--mantine-color-orange-5)"
-                                            : "var(--mantine-color-gray-3)"
-                                    }`,
-                                }}
+                                onClick={() => setActiveImage(img.path)}
+                                className={`w-[70px] h-[70px] rounded-sm cursor-pointer border-2 ${
+                                    activeImage === img.path
+                                        ? "border-orange-500"
+                                        : "border-gray-300"
+                                }`}
                             />
                         </motion.div>
-                    </Carousel.Slide>
-                ))}
-            </Carousel>
-
-            {/* Color Selection */}
-            {colors.length > 0 && (
-                <div style={{ marginTop: rem(16) }}>
-                    <Text size="sm" fw={500}>
-                        Color Family
-                    </Text>
-                    <Group gap="xs" mt={8}>
-                        {colors.map((color) => (
-                            <motion.div
-                                key={color.id}
-                                style={{
-                                    width: rem(32),
-                                    height: rem(32),
-                                    borderRadius: "50%",
-                                    border: `2px solid ${
-                                        selectedColor === color.id
-                                            ? "var(--mantine-color-orange-5)"
-                                            : "var(--mantine-color-gray-4)"
-                                    }`,
-                                    cursor: "pointer",
-                                    backgroundColor: color.hex,
-                                }}
-                                onClick={() => onColorChange(color.id)}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                aria-label={color.name}
-                            />
-                        ))}
-                    </Group>
+                    ))}
                 </div>
-            )}
+
+                {/* Bottom - Color Selection */}
+                {colors.length > 0 && (
+                    <div>
+                        <div className="flex justify-between items-center mb-2">
+                            <Text size="sm" fw={500}>
+                                Available Colors
+                            </Text>
+                            <Button
+                                variant="subtle"
+                                size="xs"
+                                onClick={() => setShowAll(!showAll)}
+                                className="text-orange-500"
+                            >
+                                {showAll ? "Show Filtered" : "Show All"}
+                            </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-0">
+                            {colors.map((color) => (
+                                <motion.div
+                                    key={color.id}
+                                    className={`w-10 h-10 cursor-pointer border-2 ${
+                                        selectedColor === color.id
+                                            ? "border-orange-500"
+                                            : "border-gray-200"
+                                    }`}
+                                    style={{ backgroundColor: color.hex }}
+                                    onClick={() => {
+                                        onColorChange(color.id);
+                                        setShowAll(false);
+                                    }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

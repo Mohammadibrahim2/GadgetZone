@@ -1,0 +1,36 @@
+/* Import Josefin Sans from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;700&display=swap');
+
+.nexonic-logo {
+  text-align: center;
+  background: transparent;
+}
+
+.nexonic-brand {
+  font-family: 'Josefin Sans';
+  font-weight: 500; /* Bold */
+  font-size: 35px;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: white;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0;
+}
+
+.nexonic-tagline {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 300; 
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: white;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+/* Optional: Add responsive sizing */
+@media (max-width: 768px) {
+  .nexonic-brand { font-size: 25px; }
+  .nexonic-tagline { font-size: 20px; }
+}

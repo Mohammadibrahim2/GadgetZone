@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', Arial, sans-serif;
             background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             color: #333;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: #ffffff;
             border-radius: 8px;
             overflow: hidden;
@@ -35,6 +34,11 @@
             margin: 0;
             font-size: 28px;
             font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
         }
         
         .content {
@@ -122,37 +126,36 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="header">
             <h1>Thank You For Your Order!</h1>
-            <p>Your order has been received and is being processed</p>
+            <p>Your order #ORD-2023-8765 has been confirmed</p>
         </div>
         
         <div class="content">
             <div class="order-details">
-                <div class="order-number">Order #{{ $order->id }}</div>
+                <div class="order-number">Order #ORD-2023-8765</div>
                 
                 <div class="info-box">
                     <div class="info-label">Order Date:</div>
-                    <div class="info-value">{{ $order?->created_at->format('F j, Y') }}</div>
+                    <div class="info-value">July 20, 2023</div>
                 </div>
                 
                 <div class="info-box">
                     <div class="info-label">Payment Method:</div>
-                    <div class="info-value">{{ ucfirst($order?->payment_method) }}</div>
+                    <div class="info-value">Credit Card (VISA •••• 4242)</div>
                 </div>
                 
                 <div class="info-box">
                     <div class="info-label">Status:</div>
                     <div class="info-value">
-                        <strong style="color: #ff5e00;">{{ ucfirst($order?->payment_status) }}</strong>
+                        <strong style="color: #ff5e00;">Processing</strong>
                     </div>
                 </div>
             </div>
             
             <h2 style="color: #ff5e00; margin-top: 0;">Order Summary</h2>
-{{--             
+            
             <table class="product-table">
                 <thead>
                     <tr>
@@ -162,53 +165,52 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($order->items as $item)
                     <tr>
-                        <td>{{ $item->product->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>${{ number_format($item->price, 2) }}</td>
+                        <td>Premium Wireless Headphones</td>
+                        <td>1</td>
+                        <td>$129.99</td>
                     </tr>
-                    @endforeach
+                    <tr>
+                        <td>Phone Charging Dock</td>
+                        <td>2</td>
+                        <td>$24.99</td>
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
                         <td colspan="2">Subtotal</td>
-                        <td>${{ number_format($order->subtotal, 2) }}</td>
+                        <td>$179.97</td>
                     </tr>
                     <tr class="total-row">
                         <td colspan="2">Shipping</td>
-                        <td>${{ number_format($order->shipping_cost, 2) }}</td>
+                        <td>$5.99</td>
                     </tr>
                     <tr class="total-row">
                         <td colspan="2">Total</td>
-                        <td>${{ number_format($order->total, 2) }}</td>
+                        <td>$185.96</td>
                     </tr>
                 </tfoot>
             </table>
             
             <div style="text-align: center;">
-                <a href="{{ route('orders.show', $order->id) }}" class="cta-button">
-                    View Your Order
-                </a>
-            </div> --}}
+                <a href="#" class="cta-button">Track Your Order</a>
+            </div>
             
             <div class="divider"></div>
             
             <h3 style="color: #ff5e00;">Shipping Information</h3>
-            {{-- <p>
-                {{ $order->shipping_address->name }}<br>
-                {{ $order->shipping_address->address_line1 }}<br>
-                @if($order->shipping_address->address_line2)
-                    {{ $order->shipping_address->address_line2 }}<br>
-                @endif
-                {{ $order->shipping_address->city }}, {{ $order->shipping_address->state }} {{ $order->shipping_address->postal_code }}<br>
-                {{ $order->shipping_address->country }}
-            </p> --}}
+            <p>
+                John Smith<br>
+              Mirpur 11<br>
+                Apt 4B<br>
+             Dhaka<br>
+              Bangladesh
+            </p>
         </div>
         
         <div class="footer">
-            <p>If you have any questions about your order, please contact our support team.</p>
-            {{-- //<p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p> --}}
+            <p>If you have any questions about your order, please contact our support team at support@example.com</p>
+            <p>© 2023 YourCompany. All rights reserved.</p>
         </div>
     </div>
 </body>

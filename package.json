@@ -44,6 +44,7 @@
         "@tiptap/pm": "^2.26.0",
         "@tiptap/react": "^2.26.0",
         "@tiptap/starter-kit": "^2.26.0",
+        "date-fns": "^4.1.0",
         "dayjs": "^1.11.13",
         "embla-carousel": "^8.6.0",
         "embla-carousel-autoplay": "^8.6.0",
@@ -54,6 +55,7 @@
         "react-hot-toast": "^2.5.2",
         "react-is": "^19.1.0",
         "react-select": "^5.10.1",
+        "react-use-draggable-scroll": "^0.4.7",
         "recharts": "^2.15.4",
         "vite-plugin-svgr": "^4.3.0",
         "ziggy-js": "^2.5.3"

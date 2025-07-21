@@ -7,7 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 function HeroCarousel() {
     const autoplay = useRef(
-        Autoplay({ delay: 4500, stopOnInteraction: false })
+        Autoplay({ delay: 3000, stopOnInteraction: false })
     );
     const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -70,7 +70,7 @@ function HeroCarousel() {
     ];
 
     return (
-        <div className="relative h-[80vh] w-full overflow-hidden">
+        <div className="relative h-[60vh] w-full overflow-hidden">
             <Carousel
                 withIndicators
                 withControls

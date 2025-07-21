@@ -23,6 +23,7 @@ class OrderResource extends JsonResource
             'discount' => $this->discount,
             'shipping_cost' => $this->shipping_cost,
             'note' => $this->note,
+            'order_status' => $this->order_status,
             'customers' => new CustomerResource($this->whenLoaded('customer')),
             'created_at' => date('d M Y', strtotime($this->created_at)),
             'orders_tracking_info' => new OrderTrackingInfoResource($this->whenLoaded('tracking'))
