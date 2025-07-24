@@ -12,13 +12,18 @@ use Attribute;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ProducFilterController extends Controller
+class ProductFilterController extends Controller
 {
-    public function index()
+    public function search(Request $request)
     {
 
-
-        // return Inertia::render('FilterProduct/FilterProductPerent', ['categories' => $categories, 'brands' => $brands,  'colors' => $colors]);
+        $search = $request->query('keyword');
+        $products = Product::where('title', 'LIKE', '%' . $search . '%')->with(['attributes.values', 'variants.images', 'variants.attributeValues'])->get();
+        return Inertia::render('FilterAndSearchProduct/SearchResults', [
+            'products' => ProductResource::collection($products),
+            'count' => $products->count(),
+            'isMobile' => false,
+        ]);
     }
 
     public function getProducts(Request $request)

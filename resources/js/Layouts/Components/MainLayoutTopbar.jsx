@@ -21,6 +21,7 @@ import {
     IconUserCircle,
     IconTrash,
     IconArrowRight,
+    IconKey,
 } from "@tabler/icons-react";
 import { route } from "ziggy-js";
 import { useState } from "react";
@@ -28,6 +29,8 @@ import { useCart } from "@/hooks/Cart/CartContext";
 import CartMenu from "@/Components/cart/cart-menu";
 import Logo from "@/Components/Logo/logo";
 import { useSearch } from "@/hooks/Search/SearchContext";
+import axios from "axios";
+import WhatsAppFloatingButton from "@/Components/WhatsAppFloatingButton";
 
 function MainTopNavbar() {
     const { auth } = usePage().props;
@@ -36,12 +39,17 @@ function MainTopNavbar() {
     const [profileOpen, setProfileOpen] = useState(false);
     const { cart, removeItem, clearCart } = useCart();
 
-    const { search, setSearch } = useSearch();
-
+    const [values, setValues] = useSearch();
     const handleSearch = (e) => {
         e.preventDefault();
 
-        router.visit("/filteredProdcts");
+        try {
+            router.get(route("products.search"), {
+                keyword: values.keyword,
+            });
+        } catch (error) {
+            console.error("Search error:", error);
+        }
     };
 
     const notifications = [
@@ -66,6 +74,7 @@ function MainTopNavbar() {
                         </Link>
                     </div>
                 </div>
+                <WhatsAppFloatingButton />
                 {/* Right side - Navigation elements */}
                 <div className="flex items-center space-x-4">
                     {/* Shop Selector */}
@@ -92,8 +101,13 @@ function MainTopNavbar() {
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                value={values.keyword}
+                                onChange={(e) =>
+                                    setValues({
+                                        ...values,
+                                        keyword: e.target.value,
+                                    })
+                                }
                                 className="rounded-md pl-2 pr-4 py-2 w-64 text-sm text-gray-700 bg-white  border border-orange-300 focus:ring-2 focus:ring-white focus:border-white"
                             />
                             <button
@@ -124,46 +138,45 @@ function MainTopNavbar() {
                                     }
                                     className="p-2 rounded-full text-white hover:bg-orange-400 relative"
                                 >
-                                    <IconBell className="h-5 w-5" />
-                                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-white"></span>
+                                    <IconSearch className="h-5 w-5" />
                                 </button>
 
                                 {notificationsOpen && (
                                     <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-20 border border-gray-200">
-                                        <div className="py-2 px-4 bg-gray-50 border-b border-gray-200">
-                                            <h3 className="text-sm font-medium text-gray-700">
-                                                Notifications
-                                            </h3>
-                                        </div>
                                         <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                                            {notifications.map(
-                                                (notification) => (
-                                                    <div
-                                                        key={notification.id}
-                                                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
-                                                            !notification.read
-                                                                ? "bg-blue-50"
-                                                                : ""
-                                                        }`}
-                                                    >
-                                                        <p className="text-sm font-medium text-gray-800">
-                                                            {notification.text}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            {notification.time}
-                                                        </p>
-                                                    </div>
-                                                )
-                                            )}
+                                            <form
+                                                onSubmit={handleSearch}
+                                                className="relative"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search..."
+                                                    value={values.keyword}
+                                                    onChange={(e) =>
+                                                        setValues({
+                                                            ...values,
+                                                            keyword:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    className="rounded-md pl-2 pr-4 py-2 w-[90%] text-sm text-gray-700 bg-white text-black  "
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    className="absolute inset-y-0 right-0 pr-2 flex items-center"
+                                                >
+                                                    <IconArrowRight className="h-5 w-5 text-orange-500" />
+                                                </button>
+                                            </form>
                                         </div>
-                                        <div className="py-2 px-4 bg-gray-50 border-t border-gray-200 text-center">
+                                        {/* <div className="py-2 px-4 bg-gray-50 border-t border-gray-200 text-center">
                                             <a
                                                 href="#"
                                                 className="text-xs font-medium text-orange-600 hover:text-orange-700"
                                             >
                                                 View all notifications
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 )}
                             </div>
@@ -260,11 +273,13 @@ function MainTopNavbar() {
                                     href={route("login.view")}
                                     className="px-3 py-1 text-sm font-medium text-white hover:bg-orange-400 rounded-lg"
                                 >
-                                    Login
+                                    <span className="flex flex-row">
+                                        <IconKey /> Login
+                                    </span>
                                 </Link>
                                 <Link
                                     href={route("register.view")}
-                                    className="px-3 py-1 text-sm font-medium bg-white text-orange-500 hover:bg-gray-100 rounded-lg"
+                                    className="px-3 py-1 text-sm font-medium bg-white text-orange-500 hover:bg-gray-100 rounded-lg lg-block hidden"
                                 >
                                     Register
                                 </Link>

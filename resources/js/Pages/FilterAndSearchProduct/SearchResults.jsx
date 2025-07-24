@@ -1,18 +1,16 @@
 import React from "react";
+import GuestLayout from "@/Layouts/GuestLayout";
+import { useSearch } from "@/hooks/Search/SearchContext";
 import { Card, Text, Group, Badge, Image, Rating } from "@mantine/core";
 import { motion } from "framer-motion";
 import { router, usePage } from "@inertiajs/react";
-import GuestLayout from "@/Layouts/GuestLayout";
-import HeroCarousel from "@/Pages/Home/Header";
-import { Categories } from "@/Pages/Home/Categories/Categories";
-import { Newsletter } from "@/Pages/Home/Newletter/Index";
-import { Footer } from "@/Pages/Home/Footer/Footer";
-import { useSearch } from "@/hooks/Search/SearchContext";
+import { Footer } from "../Home/Footer/Footer";
 
-const ShoppingPage = () => {
-    const { shopProducts } = usePage().props;
-    const products = shopProducts.data;
-    const displayProducts = products || [];
+const SearchProducts = ({}) => {
+    const { products, count } = usePage().props;
+
+    console.log(products.data);
+    const displayProducts = products.data || [];
 
     const getRandomRating = () => (Math.random() * 1.5 + 3.5).toFixed(1);
 
@@ -21,14 +19,12 @@ const ShoppingPage = () => {
     const { search } = useSearch();
     return (
         <>
-            <HeroCarousel />
-            <Categories />
-            <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-                <Text className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 ">
-                    Just For You
-                </Text>
+            <div className="px-8 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+                <span className="text-xl sm:text-3xl  text-gray-800 py-4 ">
+                    Search Results {count}
+                </span>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 my-6">
                     {displayProducts.map((product) => {
                         const priceInfo =
                             product.variants.find((attr) =>
@@ -126,13 +122,12 @@ const ShoppingPage = () => {
                     })}
                 </div>
             </div>
-            <Newsletter />
+
             <Footer />
         </>
     );
 };
 
-ShoppingPage.layout = (page) => (
-    <GuestLayout title="Products">{page}</GuestLayout>
-);
-export default ShoppingPage;
+SearchProducts.layout = (page) => <GuestLayout>{page}</GuestLayout>;
+
+export default SearchProducts;

@@ -116,15 +116,6 @@ const mainLinks = [
 
 const collections = [
     {
-        emoji: "👍",
-        label: "test",
-        route: "pregnancyChecker",
-        // subCollections: [
-        //     { label: "Monthly", route: "collections.hotels.monthly" },
-        //     { label: "Quarterly", route: "collections.hotels.quarterly" },
-        // ],
-    },
-    {
         emoji: "🚚",
         label: "Rooms",
         route: "customers.customers",

@@ -4,8 +4,7 @@ const Logo = () => {
     return (
         <div className="nexonic-logo">
             <h1>
-                <span className="nexonic-brand">NEXO</span>
-                <span className="text-white"> NIC</span>
+                <span className="nexonic-brand">Ampere</span>
             </h1>
             {/* //  <h4 className="nexonic-tagline">NEXT-GEN ELECTRONICS</h4> */}
         </div>
