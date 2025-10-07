@@ -24,27 +24,22 @@ import axios from "axios";
 import { useSearch } from "@/hooks/Search/SearchContext";
 
 const ProductFilterPage = () => {
-    const { search, setSearch } = useSearch();
-
     const { categories, brands, colors, products } = usePage().props;
-
     const isMobile = useMediaQuery("(max-width: 768px)");
     const [priceRange, setPriceRange] = useState([100, 30000]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedColors, setSelectedColors] = useState([]);
 
-    console.log(search, "from filter page");
     const fetchProducts = () => {
         const response = axios.get(route("filter.productList"), {
-            params: { priceRange, selectedCategories, selectedColors, search },
+            params: { priceRange, selectedCategories, selectedColors },
         });
     };
 
     useEffect(() => {
-        if (search) {
-            fetchProducts();
-        }
-    }, [search, selectedColors, priceRange, selectedCategories]);
+        fetchProducts();
+    }, [selectedColors, priceRange, selectedCategories]);
+
     const toggleCategory = (category) => {
         setSelectedCategories((current) =>
             current.includes(category)

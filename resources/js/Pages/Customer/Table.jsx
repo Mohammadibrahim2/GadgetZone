@@ -108,15 +108,9 @@ const CustomerTable = ({ customers }) => {
                         >
                             <tr>
                                 <th style={{ padding: "16px 24px" }}>Image</th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Category
-                                </th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Description
-                                </th>
-                                <th style={{ padding: "16px 24px" }}>
-                                    Category Slug
-                                </th>
+                                <th style={{ padding: "16px 24px" }}>Name</th>
+                                <th style={{ padding: "16px 24px" }}>Email</th>
+                                <th style={{ padding: "16px 24px" }}>Phone</th>
                                 <th style={{ padding: "16px 24px" }}>
                                     Created At
                                 </th>
